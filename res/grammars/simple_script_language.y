@@ -8,6 +8,7 @@ void yyerror(const char *error) {
 }
  
 int yywrap() {
+	puts("deu bom!");
 	return 1;
 } 
   
@@ -53,7 +54,7 @@ DC : DC SEMI_COLON LI COLON T
 
 /* Uma Declaração de Função é formada pela palavra ‘function’ seguida pelo nome da função (ID) seguida da Lista de Parâmetros (LP) entre parênteses seguida por ‘:’ e pelo Tipo (T) de retorno seguido pelo Bloco (B): */
 
-DF : FUNCTION ID LEFT_PARENTHESIS LP RIGHT_PARENTHESIS COLON T B ;
+DF : FUNCTION ID LEFT_PARENTHESIS LP RIGHT_PARENTHESIS COLON T B;
 
 LP : LP COMMA ID COLON T 
    | ID COLON T
@@ -61,7 +62,8 @@ LP : LP COMMA ID COLON T
 
 /* Um Bloco (B) é delimitado por chave e contém uma Lista de Declaração de Variáveis (LDV) seguida por uma Lista de Statements (LS) ou Comandos: */
 
-B : LEFT_BRACES LDV LS RIGHT_BRACES ;
+B : LEFT_BRACES LDV LS RIGHT_BRACES
+  | LEFT_BRACES LS RIGHT_BRACES ; /* self modification */
 
 LDV : LDV DV 
     | DV ;

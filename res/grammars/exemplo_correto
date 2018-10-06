@@ -1,0 +1,3 @@
+function dois(): integer {
+	return 2;
+}

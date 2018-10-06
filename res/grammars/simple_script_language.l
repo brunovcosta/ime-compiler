@@ -40,7 +40,7 @@
 '.'                   {return chr;}
 [a-zA-Z]+             {return id;}
 [ \t\v\n\f]           { /* ignore blank characters */ }
-.                     { yyerror("char not recognized, bitch!"); }
+.                     { yyerror("erro lexixo!"); }
 
 %%
 
