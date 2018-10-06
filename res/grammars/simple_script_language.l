@@ -1,6 +1,6 @@
 %{
 	#include <stdio.h>
-    #include "y.tab.h"
+    #include "simple_script_language.tab.h"
 	void count();
 %}
 

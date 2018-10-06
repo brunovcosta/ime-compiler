@@ -1,7 +1,7 @@
 %{
 #include <stdio.h>
 #include <string.h>
-#include "./y.tab.h"
+#include "./simple_script_language.tab.h"
  
 void yyerror(const char *error) {
 	fprintf(stderr,"error: %s\n",error);
