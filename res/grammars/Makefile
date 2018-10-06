@@ -24,4 +24,4 @@ bison.c:	simple_script_language.y
 		cmp -s simple_script_language.tab.h tok.h || cp simple_script_language.tab.h tok.h
 
 clean:
-	rm -f *.o *~ lex.c lex.yy.c bison.c tok.h simple_script_language.tab.c simple_script_language.tab.h simple_script_language.output calc
+	rm -f *.o *~ lex.c lex.yy.c bison.c tok.h simple_script_language.tab.c simple_script_language.tab.h simple_script_language.output simple_script_language
