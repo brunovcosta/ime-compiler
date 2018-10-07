@@ -48,25 +48,25 @@ T : INTEGER {$<type>$ = TYPE_INTEGER}
   | CHAR    {$<type>$ = TYPE_CHAR}
   | BOOLEAN {$<type>$ = TYPE_BOOLEAN}
   | STRING  {$<type>$ = TYPE_STRING}
-  | ID      {$<type>$ = $<type>1};
+  | IDU     {$<type>$ = $<type>1};
 
 /* Uma Declaração de Tipo (DT) pode ser uma declaração de um tipo vetor ou um tipo estrutura ou um tipo sinônimo.
 
-DT : type ID ASSIGN array LEFT_SQUARE NUM RIGHT_SQUARE OF T 
-   | type ID ASSIGN STRUCT LEFT_BRACES DC RIGHT_BRACES 
-   | type ID ASSIGN T ;
+DT : type IDD ASSIGN array LEFT_SQUARE NUM RIGHT_SQUARE OF T 
+   | type IDD ASSIGN STRUCT LEFT_BRACES DC RIGHT_BRACES 
+   | type IDD ASSIGN T ;
 
 DC : DC SEMI_COLON LI COLON T 
    | LI COLON T ;
 
 /* Uma Declaração de Função é formada pela palavra ‘function’ seguida pelo nome da função (ID) seguida da Lista de Parâmetros (LP) entre parênteses seguida por ‘:’ e pelo Tipo (T) de retorno seguido pelo Bloco (B): */
 
-DF : FUNCTION ID LEFT_PARENTHESIS LP RIGHT_PARENTHESIS COLON T B {
+DF : FUNCTION IDD LEFT_PARENTHESIS LP RIGHT_PARENTHESIS COLON T B {
    $<type>$ = $<type>7
 };
 
-LP : LP COMMA ID COLON T 
-   | ID COLON T
+LP : LP COMMA IDD COLON T 
+   | IDD COLON T
    |  ;
 
 /* Um Bloco (B) é delimitado por chave e contém uma Lista de Declaração de Variáveis (LDV) seguida por uma Lista de Statements (LS) ou Comandos: */
@@ -84,8 +84,8 @@ LS : LS S
 
 DV : VAR LI COLON T SEMI_COLON ;
 
-LI : LI COMMA ID 
-   | ID ;
+LI : LI COMMA IDD
+   | IDD ;
 
 /* Um Statement (S) pode ser um comando de seleção, repetição, um bloco, uma atricbuição ou um comando de controle de fluxo de repetição (‘break’ ou ‘continue’): */
 
@@ -127,7 +127,7 @@ F : LV
   | LV PLUS_PLUS 
   | LV MINUS_MINUS 
   | LEFT_PARENTHESIS E RIGHT_PARENTHESIS 
-  | ID LEFT_PARENTHESIS LE RIGHT_PARENTHESIS 
+  | IDU LEFT_PARENTHESIS LE RIGHT_PARENTHESIS 
   | MINUS F 
   | NOT 
   | TRUE 
@@ -139,11 +139,12 @@ F : LV
 LE : LE COMMA E
    | E ;
 
-LV : LV DOT ID
+LV : LV DOT IDU
    | LV LEFT_SQUARE E RIGHT_SQUARE
-   | ID ;
+   | IDU ;
 
-ID : id;
+IDD : id;
+IDU : id;
 
 TRUE: true;
 FALSE: false;
