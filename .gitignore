@@ -1,0 +1,10 @@
+bison.c
+bison.o
+lex.c
+lex.o
+lex.yy.c
+simple_script_language
+simple_script_language.output
+simple_script_language.tab.c
+simple_script_language.tab.h
+tok.h
