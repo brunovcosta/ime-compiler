@@ -1,5 +1,6 @@
 bison.c
 bison.o
+attributes.o
 lex.c
 lex.o
 lex.yy.c
