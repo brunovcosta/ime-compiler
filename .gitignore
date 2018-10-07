@@ -4,6 +4,7 @@ attributes.o
 lex.c
 lex.o
 lex.yy.c
+*.o
 simple_script_language
 *.output
 *.tab.c

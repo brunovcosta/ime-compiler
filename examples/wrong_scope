@@ -4,4 +4,6 @@ function dois(): integer {
 	return x;
 }
 
-x++;
+function f(): integer {
+	x++;
+}
