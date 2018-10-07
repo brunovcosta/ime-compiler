@@ -1,6 +1,6 @@
 %{
 	#include <stdio.h>
-    #include "simple_script_language.tab.h"
+    #include "parser.tab.h"
 	void count();
 %}
 

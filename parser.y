@@ -1,7 +1,7 @@
 %{
 #include <stdio.h>
 #include <string.h>
-#include "./simple_script_language.tab.h"
+#include "./parser.tab.h"
  
 void yyerror(const char *error) {
 	fprintf(stderr,"error: %s\n",error);
@@ -24,7 +24,8 @@ int main(int argc, char **argv){
 
 %union{
 	int nName;
-	struct object * pNext; t_kind eKind;
+	struct object * pNext;
+	t_kind eKind;
 	union {
 		struct {
 			struct object *pType;
@@ -44,7 +45,7 @@ int main(int argc, char **argv){
 		} Alias;
 	}_;
 }
-%token <kind> NO_KIND_DEF_=-1 VAR_ PARAM_ FUNCTION_ FIELD_ ARRAY_TYPE_ STRUCT_TYPE_ ALIAS_TYPE_ SCALAR_TYPE_  UNIVERSAL_
+%token <kind> NO_KIND_DEF_ VAR_ PARAM_ FUNCTION_ FIELD_ ARRAY_TYPE_ STRUCT_TYPE_ ALIAS_TYPE_ SCALAR_TYPE_  UNIVERSAL_
 
 %right "then" ELSE // Same precedence, but "shift" wins.
 
@@ -166,8 +167,26 @@ LV : LV DOT IDU
 IDD : id;
 IDU : id;
 
-TRUE: true;
-FALSE: false;
-CHR: chr;
-STR: str;
-NUM: num;
+TRUE: true {
+	$<type>$ = pBool;
+	$<val>$  = true;
+};
+FALSE: false {
+	$<type>$ = pBool;
+	$<val>$  = false;
+};
+CHR: chr {
+	$<type>$ = pChar;
+	$<pos>$  = tokenSecundario;
+	$<val>$  = getCharConst(CHR.pos);
+};
+STR: str {
+	$<type>$ = pString;
+	$<pos>$ = tokenSecundario;
+	$<val>$ = getStringConst(STR.pos);
+};
+NUM: num {
+	$<type>$ = pInteger;
+	$<pos>$  = tokenSecundario;
+	$<val>$  = getIntConst(NUM.pos);
+};
