@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "./parser.tab.h"
+#include "./headers.h"
  
 void yyerror(const char *error) {
 	fprintf(stderr,"error: %s\n",error);
@@ -23,26 +24,46 @@ int main(int argc, char **argv){
 %token chr num str id true false
 
 %union{
-	int nName;
-	struct object * pNext;
-	t_kind eKind;
+	int nont;
 	union {
 		struct {
-			struct object *pType;
-		  } Var, Param, Field;
+			pobject obj;
+			int name;
+		} ID;
 		struct {
-			struct object *pRetType;
-			struct object *pParams;
-		} Function;
+			pobject type;
+		} T,E,L,R,TM,F,LV;
+		struct{
+			pobject list;
+		} LI,DC;
+		struct{
+			pobject list;
+			int nSize;
+		} LP;
+		struct{
+			bool val;
+			pobject type;
+		} BOOL;
 		struct {
-			struct object *pElemType; int nNumElems;
-		} Array;
-		struct {
-			struct object *pFields;
-		} Struct;
-		struct {
-			struct object *pBaseType;
-		} Alias;
+			pobject type;
+			int pos;
+			union {
+				int n;
+				char c;
+				string* s;
+			} val;
+		} CONST;
+		struct{
+			pobject type;
+			pobject param;
+			bool err;
+		}MC;
+		struct{
+			pobject type;
+			pobject param;
+			bool err;
+			int n;
+		} LE;
 	}_;
 }
 %token <kind> NO_KIND_DEF_ VAR_ PARAM_ FUNCTION_ FIELD_ ARRAY_TYPE_ STRUCT_TYPE_ ALIAS_TYPE_ SCALAR_TYPE_  UNIVERSAL_
@@ -65,10 +86,10 @@ DE : DF
 
 /* Um Tipo (T) pode ser a palavra ‘integer’ ou a palavra ‘char’ ou a palavra ‘boolean’ ou a palavra ‘string’ ou um ID representando um tipo previamente declarado: */
 
-T : INTEGER {$<type>$ = TYPE_INTEGER}
-  | CHAR    {$<type>$ = TYPE_CHAR}
-  | BOOLEAN {$<type>$ = TYPE_BOOLEAN}
-  | STRING  {$<type>$ = TYPE_STRING}
+T : INTEGER {$<type>$ = pInteger}
+  | CHAR    {$<type>$ = pChar}
+  | BOOLEAN {$<type>$ = pBool}
+  | STRING  {$<type>$ = pString}
   | IDU     {$<type>$ = $<type>1};
 
 /* Uma Declaração de Tipo (DT) pode ser uma declaração de um tipo vetor ou um tipo estrutura ou um tipo sinônimo.
