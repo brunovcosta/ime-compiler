@@ -20,8 +20,8 @@ bison.o:	bison.c
 
 bison.c:	parser.y
 		bison -d -v parser.y
-		cp simple_script_language.tab.c bison.c
-		cmp -s simple_script_language.tab.h tok.h || cp simple_script_language.tab.h tok.h
+		cp parser.tab.c bison.c
+		cmp -s parser.tab.h tok.h || cp parser.tab.h tok.h
 
 clean:
-	rm -f *.o *~ lex.c lex.yy.c bison.c tok.h simple_script_language.tab.c simple_script_language.tab.h simple_script_language.output simple_script_language
+	rm -f *.o *~ lex.c lex.yy.c bison.c tok.h parser.tab.c parser.tab.h parser.output simple_script_language
