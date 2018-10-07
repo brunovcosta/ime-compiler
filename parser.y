@@ -1,12 +1,7 @@
 %{
 #include <stdio.h>
 #include <string.h>
-#include "./helpers/object.h"
-#include "./helpers/attributes.h"
-#include "./helpers/syntax.h"
-#include "./parser.tab.h"
 
-pobject p, t, f, t1, t2;
  
 // Declare stuff from Flex that Bison needs to know about:
 extern int yylex();
@@ -22,6 +17,16 @@ int main(int argc, char **argv){
 }
 
 %}
+
+%code requires{
+#include "./helpers/object.h"
+#include "./helpers/syntax.h"
+#include "./parser.tab.h"
+#include "./helpers/attributes.h"
+
+pobject p, t, f, t1, t2;
+}
+
 %token COLON SEMI_COLON COMMA EQUALS LEFT_SQUARE RIGHT_SQUARE LEFT_BRACES RIGHT_BRACES LEFT_PARENTHESIS RIGHT_PARENTHESIS AND OR LESS_THAN GREATER_THAN LESS_OR_EQUAL GREATER_OR_EQUAL NOT_EQUAL EQUAL_EQUAL PLUS PLUS_PLUS MINUS MINUS_MINUS TIMES DIVIDE DOT NOT
 %token RETURN ELSE BREAK WHILE VAR ASSIGN CONTINUE FUNCTION STRING IF BOOLEAN CHAR INTEGER DO
 %token const_char const_number const_string id const_true const_false

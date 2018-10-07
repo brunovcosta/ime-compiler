@@ -11,10 +11,10 @@
                          (k)==SCALAR_TYPE_)
 void Error(int code);
 
-object int_ = { -1, 0, SCALAR_TYPE_ };       pobject pInt = &int_;
-object char_ = { -1, 0, SCALAR_TYPE_ };      pobject pChar = &char_;
-object bool_ = { -1, 0, SCALAR_TYPE_ };      pobject pBool = &bool_;
-object string_ = { -1, 0, SCALAR_TYPE_ };    pobject pString = &string_;
+object int_ =      { -1, 0, SCALAR_TYPE_ };  pobject pInt = &int_;
+object char_ =     { -1, 0, SCALAR_TYPE_ };  pobject pChar = &char_;
+object bool_ =     { -1, 0, SCALAR_TYPE_ };  pobject pBool = &bool_;
+object string_ =   { -1, 0, SCALAR_TYPE_ };  pobject pString = &string_;
 object universal_= { -1, 0, SCALAR_TYPE_ };  pobject pUniversal = &universal_;
 
 #endif
