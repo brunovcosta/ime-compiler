@@ -21,6 +21,13 @@ int main(int argc, char **argv){
 %token COLON SEMI_COLON COMMA EQUALS LEFT_SQUARE RIGHT_SQUARE LEFT_BRACES RIGHT_BRACES LEFT_PARENTHESIS RIGHT_PARENTHESIS AND OR LESS_THAN GREATER_THAN LESS_OR_EQUAL GREATER_OR_EQUAL NOT_EQUAL EQUAL_EQUAL PLUS PLUS_PLUS MINUS MINUS_MINUS TIMES DIVIDE DOT NOT
 %token RETURN ELSE DT BREAK WHILE VAR ASSIGN CONTINUE FUNCTION STRING IF BOOLEAN CHAR INTEGER DO
 %token chr num str id true false
+
+%union{
+	int type;
+	char *name;
+}
+%token <type> TYPE_INTEGER TYPE_STRING TYPE_CHAR TYPE_BOOLEAN
+
 %start P
 %%
 /* Um Programa (P) é formado por uma Lista de Declarações Externas (LDE) */
@@ -37,11 +44,11 @@ DE : DF
 
 /* Um Tipo (T) pode ser a palavra ‘integer’ ou a palavra ‘char’ ou a palavra ‘boolean’ ou a palavra ‘string’ ou um ID representando um tipo previamente declarado: */
 
-T : INTEGER 
-  | CHAR 
-  | BOOLEAN 
-  | STRING 
-  | ID ;
+T : INTEGER {$<type>$ = TYPE_INTEGER}
+  | CHAR    {$<type>$ = TYPE_CHAR}
+  | BOOLEAN {$<type>$ = TYPE_BOOLEAN}
+  | STRING  {$<type>$ = TYPE_STRING}
+  | ID      {$<type>$ = $<type>1};
 
 /* Uma Declaração de Tipo (DT) pode ser uma declaração de um tipo vetor ou um tipo estrutura ou um tipo sinônimo.
 
@@ -54,7 +61,9 @@ DC : DC SEMI_COLON LI COLON T
 
 /* Uma Declaração de Função é formada pela palavra ‘function’ seguida pelo nome da função (ID) seguida da Lista de Parâmetros (LP) entre parênteses seguida por ‘:’ e pelo Tipo (T) de retorno seguido pelo Bloco (B): */
 
-DF : FUNCTION ID LEFT_PARENTHESIS LP RIGHT_PARENTHESIS COLON T B;
+DF : FUNCTION ID LEFT_PARENTHESIS LP RIGHT_PARENTHESIS COLON T B {
+   $<type>$ = $<type>7
+};
 
 LP : LP COMMA ID COLON T 
    | ID COLON T
