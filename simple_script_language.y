@@ -28,6 +28,8 @@ int main(int argc, char **argv){
 }
 %token <type> TYPE_INTEGER TYPE_STRING TYPE_CHAR TYPE_BOOLEAN
 
+%right "then" ELSE // Same precedence, but "shift" wins.
+
 %start P
 %%
 /* Um Programa (P) é formado por uma Lista de Declarações Externas (LDE) */
@@ -89,8 +91,8 @@ LI : LI COMMA IDD
 
 /* Um Statement (S) pode ser um comando de seleção, repetição, um bloco, uma atricbuição ou um comando de controle de fluxo de repetição (‘break’ ou ‘continue’): */
 
-S : IF LEFT_PARENTHESIS E RIGHT_PARENTHESIS S 
-  /*| IF LEFT_PARENTHESIS E RIGHT_PARENTHESIS S ELSE S */
+S : IF LEFT_PARENTHESIS E RIGHT_PARENTHESIS S %prec "then"
+  | IF LEFT_PARENTHESIS E RIGHT_PARENTHESIS S ELSE S
   | WHILE LEFT_PARENTHESIS E RIGHT_PARENTHESIS S 
   | DO S WHILE LEFT_PARENTHESIS E RIGHT_PARENTHESIS SEMI_COLON 
   | B 
