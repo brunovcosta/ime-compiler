@@ -23,10 +23,28 @@ int main(int argc, char **argv){
 %token chr num str id true false
 
 %union{
-	int type;
-	char *name;
+	int nName;
+	struct object * pNext; t_kind eKind;
+	union {
+		struct {
+			struct object *pType;
+		  } Var, Param, Field;
+		struct {
+			struct object *pRetType;
+			struct object *pParams;
+		} Function;
+		struct {
+			struct object *pElemType; int nNumElems;
+		} Array;
+		struct {
+			struct object *pFields;
+		} Struct;
+		struct {
+			struct object *pBaseType;
+		} Alias;
+	}_;
 }
-%token <type> TYPE_INTEGER TYPE_STRING TYPE_CHAR TYPE_BOOLEAN
+%token <kind> NO_KIND_DEF_=-1 VAR_ PARAM_ FUNCTION_ FIELD_ ARRAY_TYPE_ STRUCT_TYPE_ ALIAS_TYPE_ SCALAR_TYPE_  UNIVERSAL_
 
 %right "then" ELSE // Same precedence, but "shift" wins.
 
