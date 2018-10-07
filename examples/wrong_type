@@ -1,0 +1,6 @@
+function dois(): integer {
+	return 2;
+}
+
+var letra: char;
+letra = dois();

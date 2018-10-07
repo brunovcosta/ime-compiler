@@ -1,0 +1,7 @@
+function dois(): integer {
+	var x: integer;
+	x=2;
+	return x;
+}
+
+x++;
