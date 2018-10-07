@@ -17,9 +17,12 @@
 "if"                  {return IF;}
 "boolean"             {return BOOLEAN;}
 "char"                {return CHAR;}
+"type"                {return TYPE;}
 "integer"             {return INTEGER;}
 "return"              {return RETURN;}
 "do"                  {return DO;}
+"of"                  {return OF;}
+"struct"              {return STRUCT;}
 ">="                  {return GREATER_OR_EQUAL;}
 "<="                  {return LESS_OR_EQUAL;}
 ">"                   {return GREATER_THAN;}
@@ -37,6 +40,7 @@
 "!"                   {return NOT;}
 "true"                {return const_true;}
 "false"               {return const_false;}
+\[(.*,)*\]            {return const_false;}
 [0-9]+                {return const_number;}
 \"[a-zA-Z]+\"         {return const_string;}
 '.'                   {return const_char;}
