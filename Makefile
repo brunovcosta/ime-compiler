@@ -11,15 +11,15 @@ simple_script_language:		$(OBJS)
 lex.o:		lex.c
 		$(CC) $(CFLAGS) -c lex.c -o lex.o
 
-lex.c:		simple_script_language.l 
-		flex simple_script_language.l
+lex.c:		lexer.l 
+		flex lexer.l
 		cp lex.yy.c lex.c
 
 bison.o:	bison.c
 		$(CC) $(CFLAGS) -c bison.c -o bison.o
 
-bison.c:	simple_script_language.y
-		bison -d -v simple_script_language.y
+bison.c:	parser.y
+		bison -d -v parser.y
 		cp simple_script_language.tab.c bison.c
 		cmp -s simple_script_language.tab.h tok.h || cp simple_script_language.tab.h tok.h
 
