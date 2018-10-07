@@ -1,33 +1,26 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "./scope.h"
+
 //TODO what is the max nest level
 #define MAX_NEST_LEVEL 10
-
-typedef struct object
-{
-    int nName;
-    struct object *pNext;
-} object, *pobject;
 
 pobject SymbolTable[MAX_NEST_LEVEL];
 pobject SymbolTableLast[MAX_NEST_LEVEL];
 int nCurrentLevel = -1;
 
-int NewBlock(void)
-{
+int NewBlock(void) {
     SymbolTable[++nCurrentLevel] = NULL;
     SymbolTableLast[nCurrentLevel] = NULL;
     return nCurrentLevel;
 }
 
-int EndBlock(void)
-{
+int EndBlock(void) {
     return --nCurrentLevel;
 }
 
-pobject Define(int aName)
-{
+pobject Define(int aName) {
     pobject obj = (pobject)malloc(sizeof(object));
     obj->nName = aName;
     obj->pNext = NULL;

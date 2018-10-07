@@ -1,7 +1,8 @@
 %{
 	#include <stdio.h>
-    #include "parser.tab.h"
-	void count();
+	#include "./parser.tab.h"
+
+	extern int yylex();
 %}
 
 %%
@@ -35,44 +36,12 @@
 "."                   {return DOT;}
 ","                   {return COMMA;}
 "!"                   {return NOT;}
-[0-9]+                {return num;}
-\"[a-zA-Z]+\"         {return str;}
-'.'                   {return chr;}
+"true"                {return const_true;}
+"false"               {return const_false;}
+[0-9]+                {return const_number;}
+\"[a-zA-Z]+\"         {return const_string;}
+'.'                   {return const_char;}
 [a-zA-Z]+             {return id;}
 [ \t\v\n\f]           { /* ignore blank characters */ }
-.                     { yyerror("erro lexixo!"); }
+.                     { puts("deu ruim!"); }
 
-%%
-
-int column = 0;
-
-void count() {
-	int i;
-
-	for (i = 0; yytext[i] != '\0'; i++)
-		if (yytext[i] == '\n')
-			column = 0;
-		else if (yytext[i] == '\t')
-			column += 8 - (column % 8);
-		else
-			column++;
-
-	ECHO;
-}
-
-int check_type() {
-/*
-* pseudo code --- this is what it should check
-*
-*	if (yytext == type_name)
-*		return(TYPE_NAME);
-*
-*	return(IDENTIFIER);
-*/
-
-/*
-*	it actually will only return IDENTIFIER
-*/
-
-	return(id);
-}

@@ -1,14 +1,11 @@
-#ifndef HEADERS
-#define HEADERS
-typedef enum { 
-    NO_KIND_DEF_=-1, VAR_, PARAM_, FUNCTION_, FIELD_, ARRAY_TYPE_, STRUCT_TYPE_, ALIAS_TYPE_, SCALAR_TYPE_ , UNIVERSAL_
-} t_kind;
+#ifndef OBJECT_H
+#define OBJECT_H
 
 typedef struct object
 {
     int nName;
     struct object *pNext;
-    t_kind eKind;
+    int eKind;
     
     union {
         struct {
@@ -33,9 +30,4 @@ typedef struct object
     
 } object, *pobject;
 
-int NewBlock(void);
-int EndBlock(void);
-pobject Define(int aName);
-pobject Search (int aName);
-pobject Find (int aName);
 #endif

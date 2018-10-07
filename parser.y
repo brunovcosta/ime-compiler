@@ -1,77 +1,83 @@
 %{
 #include <stdio.h>
 #include <string.h>
-#include "./scope_functions.h"
+#include "./helpers/object.h"
+#include "./helpers/attributes.h"
+#include "./helpers/syntax.h"
 #include "./parser.tab.h"
-#include "./headers.h"
+
+pobject p, t, f, t1, t2;
  
-void yyerror(const char *error) {
-	fprintf(stderr,"error: %s\n",error);
-}
+// Declare stuff from Flex that Bison needs to know about:
+extern int yylex();
+extern int yyparse();
+extern FILE *yyin;
  
-int yywrap() {
-	puts("deu bom!");
-	return 1;
-} 
-  
+void yyerror(const char *s);
+
+
 int main(int argc, char **argv){
 	yyparse();
 	return 0;
-} 
+}
 
 %}
 %token COLON SEMI_COLON COMMA EQUALS LEFT_SQUARE RIGHT_SQUARE LEFT_BRACES RIGHT_BRACES LEFT_PARENTHESIS RIGHT_PARENTHESIS AND OR LESS_THAN GREATER_THAN LESS_OR_EQUAL GREATER_OR_EQUAL NOT_EQUAL EQUAL_EQUAL PLUS PLUS_PLUS MINUS MINUS_MINUS TIMES DIVIDE DOT NOT
-%token RETURN ELSE DT BREAK WHILE VAR ASSIGN CONTINUE FUNCTION STRING IF BOOLEAN CHAR INTEGER DO
-%token chr num str id true false
+%token RETURN ELSE BREAK WHILE VAR ASSIGN CONTINUE FUNCTION STRING IF BOOLEAN CHAR INTEGER DO
+%token const_char const_number const_string id const_true const_false
+%token ERR_REDCL ERR_NO_DECL ERR_TYPE_EXPECTED ERR_BOOL_TYPE_EXPECTED ERR_TYPE_MISMATCH ERR_INVALID_TYPE ERR_KIND_NOT_STRUCT ERR_FIELD_NOT_DECL ERR_KIND_NOT_ARRAY ERR_INVALID_INDEX_TYPE ERR_KIND_NOT_VAR ERR_KIND_NOT_FUNCTION ERR_TOO_MANY_ARGS ERR_PARAM_TYPE ERR_TOO_FEW_ARGS ERR_RETURN_TYPE_MISMATCH
 
-%union{
+%union {
 	int nont;
 	union {
 		struct {
 			pobject obj;
 			int name;
-		} ID;
+		} ID_;
 		struct {
 			pobject type;
-		} T,E,L,R,TM,F,LV;
-		struct{
+		} T_,E_,L_,R_,TM_,F_,LV_;
+		struct {
 			pobject list;
-		} LI,DC;
+		} LI_,DC_;
 		struct{
 			pobject list;
 			int nSize;
-		} LP;
+		} LP_;
 		struct{
-			bool val;
+			int val;
 			pobject type;
-		} BOOL;
+		} BOOL_;
 		struct {
 			pobject type;
 			int pos;
 			union {
 				int n;
 				char c;
-				string* s;
+				char **s;
 			} val;
-		} CONST;
+		} CONST_;
 		struct{
 			pobject type;
 			pobject param;
-			bool err;
-		}MC;
+			int err;
+		}MC_;
 		struct{
 			pobject type;
 			pobject param;
-			bool err;
+			int err;
 			int n;
-		} LE;
+		} LE_;
 	}_;
 }
+
+%token <type> DT DC NT_TRUE NT_FALSE NT_CHR NT_STR NT_NUM NB MF MC
 %token <kind> NO_KIND_DEF_ VAR_ PARAM_ FUNCTION_ FIELD_ ARRAY_TYPE_ STRUCT_TYPE_ ALIAS_TYPE_ SCALAR_TYPE_  UNIVERSAL_
 
 %right "then" ELSE // Same precedence, but "shift" wins.
 
 %start P
+
 %%
 /* Um Programa (P) é formado por uma Lista de Declarações Externas (LDE) */
 
@@ -87,11 +93,32 @@ DE : DF
 
 /* Um Tipo (T) pode ser a palavra ‘integer’ ou a palavra ‘char’ ou a palavra ‘boolean’ ou a palavra ‘string’ ou um ID representando um tipo previamente declarado: */
 
-T : INTEGER {$<type>$ = pInteger}
-  | CHAR    {$<type>$ = pChar}
-  | BOOLEAN {$<type>$ = pBool}
-  | STRING  {$<type>$ = pString}
-  | IDU     {$<type>$ = $<type>1};
+T : INTEGER {
+	$<nont>$ = T;
+	$<_.T_.type>$ = pInt;
+}
+  | CHAR {
+	$<nont>$ = T;
+	$<_.T_.type>$ = pChar;
+}
+  | BOOLEAN {
+	$<nont>$ = T;
+	$<_.T_.type>$ = pBool;
+}
+  | STRING {
+	$<nont>$ = T;
+	$<_.T_.type>$ = pString;
+}
+  | IDU{
+	p = $<_.ID_.obj>$;
+	if (IS_TYPE_KIND(p->eKind) || p->eKind == UNIVERSAL_) {
+		$<_.T_.type>$ = p;
+	} else {
+		$<_.T_.type>$ = pUniversal;
+		Error( ERR_TYPE_EXPECTED );
+	}
+	$<nont>$ = T;
+};
 
 /* Uma Declaração de Tipo (DT) pode ser uma declaração de um tipo vetor ou um tipo estrutura ou um tipo sinônimo.
 
@@ -110,10 +137,7 @@ DC : DC SEMI_COLON LI COLON T
 
 /* Uma Declaração de Função é formada pela palavra ‘function’ seguida pelo nome da função (ID) seguida da Lista de Parâmetros (LP) entre parênteses seguida por ‘:’ e pelo Tipo (T) de retorno seguido pelo Bloco (B): */
 
-DF : FUNCTION IDD NB LEFT_PARENTHESIS LP RIGHT_PARENTHESIS COLON T B {
-  $<type>$ = $<type>7
-  EndBlock();
-};
+DF : FUNCTION IDD NB LEFT_PARENTHESIS LP RIGHT_PARENTHESIS COLON T B ;
 
 LP : LP COMMA IDD COLON T 
    | IDD COLON T
@@ -196,26 +220,8 @@ LV : LV DOT IDU
 IDD : id;
 IDU : id;
 
-TRUE: true {
-	$<type>$ = pBool;
-	$<val>$  = true;
-};
-FALSE: false {
-	$<type>$ = pBool;
-	$<val>$  = false;
-};
-CHR: chr {
-	$<type>$ = pChar;
-	$<pos>$  = tokenSecundario;
-	$<val>$  = getCharConst(CHR.pos);
-};
-STR: str {
-	$<type>$ = pString;
-	$<pos>$ = tokenSecundario;
-	$<val>$ = getStringConst(STR.pos);
-};
-NUM: num {
-	$<type>$ = pInteger;
-	$<pos>$  = tokenSecundario;
-	$<val>$  = getIntConst(NUM.pos);
-};
+TRUE: const_true;
+FALSE: const_false;
+CHR: const_char;
+STR: const_string;
+NUM: const_number;

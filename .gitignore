@@ -8,3 +8,4 @@ simple_script_language
 *.tab.c
 *.tab.h
 tok.h
+.vscode
