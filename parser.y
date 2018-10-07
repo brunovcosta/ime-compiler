@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "./simple_script_language.tab.h"
+#include "./scope_functions.h"
  
 void yyerror(const char *error) {
 	fprintf(stderr,"error: %s\n",error);
@@ -72,8 +73,14 @@ T : INTEGER {$<type>$ = TYPE_INTEGER}
 
 /* Uma Declaração de Tipo (DT) pode ser uma declaração de um tipo vetor ou um tipo estrutura ou um tipo sinônimo.
 
+NB : {
+  NewBlock();
+};
+
 DT : type IDD ASSIGN array LEFT_SQUARE NUM RIGHT_SQUARE OF T 
-   | type IDD ASSIGN STRUCT LEFT_BRACES DC RIGHT_BRACES 
+   | type IDD ASSIGN STRUCT NB LEFT_BRACES DC RIGHT_BRACES {
+     EndBlock();
+   }
    | type IDD ASSIGN T ;
 
 DC : DC SEMI_COLON LI COLON T 
@@ -81,8 +88,9 @@ DC : DC SEMI_COLON LI COLON T
 
 /* Uma Declaração de Função é formada pela palavra ‘function’ seguida pelo nome da função (ID) seguida da Lista de Parâmetros (LP) entre parênteses seguida por ‘:’ e pelo Tipo (T) de retorno seguido pelo Bloco (B): */
 
-DF : FUNCTION IDD LEFT_PARENTHESIS LP RIGHT_PARENTHESIS COLON T B {
-   $<type>$ = $<type>7
+DF : FUNCTION IDD NB LEFT_PARENTHESIS LP RIGHT_PARENTHESIS COLON T B {
+  $<type>$ = $<type>7
+  EndBlock();
 };
 
 LP : LP COMMA IDD COLON T 
