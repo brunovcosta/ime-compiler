@@ -78,7 +78,7 @@ pobject p, t, f, t1, t2;
 	}_;
 }
 
-%token <type> DT DC NT_TRUE NT_FALSE NT_CHR NT_STR NT_NUM NB MF MC
+%token <type> DT DC NT_TRUE NT_FALSE NT_CHR NT_STR NT_NUM MF MC
 %token NO_KIND_DEF_ VAR_ PARAM_ FUNCTION_ FIELD_ ARRAY_TYPE_ STRUCT_TYPE_ ALIAS_TYPE_ SCALAR_TYPE_  UNIVERSAL_
 
 %right "then" ELSE // Same precedence, but "shift" wins.
@@ -126,7 +126,7 @@ T : INTEGER {
 	$<nont>$ = T;
 };
 
-/* Uma Declaração de Tipo (DT) pode ser uma declaração de um tipo vetor ou um tipo estrutura ou um tipo sinônimo.
+/* Uma Declaração de Tipo (DT) pode ser uma declaração de um tipo vetor ou um tipo estrutura ou um tipo sinônimo. */
 
 NB : {
   NewBlock();
@@ -143,7 +143,9 @@ DC : DC SEMI_COLON LI COLON T
 
 /* Uma Declaração de Função é formada pela palavra ‘function’ seguida pelo nome da função (ID) seguida da Lista de Parâmetros (LP) entre parênteses seguida por ‘:’ e pelo Tipo (T) de retorno seguido pelo Bloco (B): */
 
-DF : FUNCTION IDD NB LEFT_PARENTHESIS LP RIGHT_PARENTHESIS COLON T B ;
+DF : FUNCTION IDD NB LEFT_PARENTHESIS LP RIGHT_PARENTHESIS COLON T B {
+  EndBlock();
+};
 
 LP : LP COMMA IDD COLON T 
    | IDD COLON T
