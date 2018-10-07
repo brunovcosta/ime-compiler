@@ -14,8 +14,8 @@ lex.o: lex.c
 scope.o: helpers/scope.c
 	$(CC) $(CFLAGS) -c helpers/scope.c -o scope.o
 
-attributes.o: helpers/attributes.cpp
-	$(CC) $(CFLAGS) -c helpers/attributes.cpp -o attributes.o
+attributes.o: helpers/attributes.c
+	$(CC) $(CFLAGS) -c helpers/attributes.c -o attributes.o
 
 lex.c: lexer.l 
 	flex lexer.l

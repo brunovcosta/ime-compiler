@@ -29,5 +29,4 @@ typedef struct object
     }_;
     
 } object, *pobject;
-
 #endif

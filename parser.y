@@ -1,30 +1,32 @@
 %{
 #include <stdio.h>
 #include <string.h>
+#include "./parser.tab.h"
 
  
-// Declare stuff from Flex that Bison needs to know about:
-extern int yylex();
-extern int yyparse();
-extern FILE *yyin;
- 
-void yyerror(const char *s);
-
-
-int main(int argc, char **argv){
-	yyparse();
-	return 0;
+void yyerror(const char *error) {
+    fprintf(stderr,"error: %s\n",error);
 }
+
+int yywrap() {
+    puts("deu bom!");
+    return 1;
+} 
+  
+int main(int argc, char **argv){
+    yyparse();
+    return 0;
+} 
 
 %}
 
 %code requires{
 #include "./helpers/object.h"
 #include "./helpers/syntax.h"
-#include "./parser.tab.h"
 #include "./helpers/attributes.h"
 
 pobject p, t, f, t1, t2;
+
 }
 
 %token COLON SEMI_COLON COMMA EQUALS LEFT_SQUARE RIGHT_SQUARE LEFT_BRACES RIGHT_BRACES LEFT_PARENTHESIS RIGHT_PARENTHESIS AND OR LESS_THAN GREATER_THAN LESS_OR_EQUAL GREATER_OR_EQUAL NOT_EQUAL EQUAL_EQUAL PLUS PLUS_PLUS MINUS MINUS_MINUS TIMES DIVIDE DOT NOT
@@ -77,7 +79,7 @@ pobject p, t, f, t1, t2;
 }
 
 %token <type> DT DC NT_TRUE NT_FALSE NT_CHR NT_STR NT_NUM NB MF MC
-%token <kind> NO_KIND_DEF_ VAR_ PARAM_ FUNCTION_ FIELD_ ARRAY_TYPE_ STRUCT_TYPE_ ALIAS_TYPE_ SCALAR_TYPE_  UNIVERSAL_
+%token NO_KIND_DEF_ VAR_ PARAM_ FUNCTION_ FIELD_ ARRAY_TYPE_ STRUCT_TYPE_ ALIAS_TYPE_ SCALAR_TYPE_  UNIVERSAL_
 
 %right "then" ELSE // Same precedence, but "shift" wins.
 
@@ -120,7 +122,6 @@ T : INTEGER {
 		$<_.T_.type>$ = p;
 	} else {
 		$<_.T_.type>$ = pUniversal;
-		Error( ERR_TYPE_EXPECTED );
 	}
 	$<nont>$ = T;
 };
