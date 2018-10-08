@@ -2,10 +2,15 @@
 #include <stdio.h>
 #include <string.h>
 #include "./parser.tab.h"
+#include "./helpers/shared.h"
+#include "./helpers/lexer.h"
+#define db(x) printf(#x);printf(": %d\n",x);
+
+int secondaryToken;
 
  
 void yyerror(const char *error) {
-    fprintf(stderr,"error: %s\n",error);
+    fprintf(stderr,"error: %s\n na linha %d",error,line);
 }
 
 int yywrap() {
@@ -225,8 +230,23 @@ LV : LV DOT IDU
    | LV LEFT_SQUARE E RIGHT_SQUARE
    | IDU ;
 
-IDD : id;
-IDU : id;
+IDD : id {
+  db(secondaryToken);
+  printf("reduziu IDD: %s\n",ids[secondaryToken].name);
+  //$<_.ID_.name>$ = ids[secondaryToken].name;
+  //if( ids[secondaryToken].count  > 1 ) {
+  //  printf("ta tentando redefinir!\n");
+  //}
+};
+
+IDU : id {
+  int name =ids[secondaryToken].name;
+  $<_.ID_.name>$ = name;
+  if( searchName( name ) == -1 ) {
+        printf("é o que? macho?\n");
+        addName(name);
+  }
+};
 
 TRUE: const_true;
 FALSE: const_false;
