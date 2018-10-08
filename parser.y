@@ -240,8 +240,10 @@ IDD : id {
 };
 
 IDU : id {
-  int name =ids[secondaryToken].name;
+  char *name =ids[secondaryToken].name;
   $<_.ID_.name>$ = name;
+  printf("\n\n%s\n\n", ids[0].name);
+  printf("\n\n%d\n\n", secondaryToken);
   if( searchName( name ) == -1 ) {
         printf("é o que? macho?\n");
         addName(name);
