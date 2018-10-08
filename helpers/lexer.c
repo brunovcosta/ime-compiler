@@ -23,15 +23,15 @@ int addName(char *name){
     int pos;
     for(pos=0;pos<idsCount;pos++){
         printf("addName: comparing %s with %s\n",name,ids[pos].name);
-        if(strcmp(name,ids[pos].name) != 0){ //achou
+        if(strcmp(name,ids[pos].name) == 0){ //achou
             ids[pos].count++;
-            printf("addName returning %d\n", pos);
+            printf("Found name! addName returning %d\n", pos);
             return pos;
         }
     }
     idsCount++;
     strcpy(ids[pos].name,name);
     ids[pos].count=1;
-    printf("addName returning %d\n",pos);
+    printf("Did not find name! addName returning %d\n",pos);
     return pos;
 }
