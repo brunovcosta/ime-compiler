@@ -1,14 +1,17 @@
 # IME Compiler
 
 ## Requirements
-### bison 3
-#### Mac OSX
+ - make
+ - bison3
+ - clang/gcc
+
+### Installing bison 3 in MacOSX
 ```
 brew install bison
 brew link bison --force
 ```
 ## Usage
-Mac OSX
+MacOSX/Linux
 ```
 make
 ```
@@ -16,17 +19,27 @@ run examples
 ```
 $ ./simple_script_language < examples/correct
 compilado com sucesso!
+```
 
+```
 $ ./simple_script_language < examples/wrong_lexer
 lexer error: invalid character
+```
 
+```
 $ ./simple_script_language < examples/wrong_parser
+error: syntax error
+ na linha 2
+```
 
+```
 $ ./simple_script_language < examples/wrong_scope_error
 scope warning: trying to use unexisting
 scope warning: trying to use unexisting
 scope error: trying to redefine
+```
 
+```
 $ ./simple_script_language < examples/wrong_scope_warning
 scope warning: trying to use unexisting
 scope warning: trying to use unexisting
