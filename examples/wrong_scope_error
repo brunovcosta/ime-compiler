@@ -1,0 +1,10 @@
+function dois(): integer {
+	var x: integer;
+	x=2;
+	return x;
+}
+
+function f(): integer {
+	var t: integer;
+	var t: integer;
+}

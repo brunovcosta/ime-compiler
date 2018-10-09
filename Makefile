@@ -1,6 +1,6 @@
 # Makefile
 
-OBJS = bison.o lex.o scope.o attributes.o lexer.o
+OBJS = bison.o lex.o scope.o attributes.o
 
 CC = cc
 CFLAGS = -g
@@ -17,9 +17,6 @@ scope.o: helpers/scope.c
 attributes.o: helpers/attributes.c
 	$(CC) $(CFLAGS) -c helpers/attributes.c -o attributes.o
 
-lexer.o: helpers/lexer.c
-	$(CC) $(CFLAGS) -c helpers/lexer.c -o lexer.o
-
 lex.c: lexer.l 
 	flex lexer.l
 	cp lex.yy.c lex.c
@@ -33,4 +30,4 @@ bison.c: parser.y
 	cmp -s parser.tab.h tok.h || cp parser.tab.h tok.h
 
 clean:
-	rm -f *.o *~ lex.c lex.yy.c bison.c tok.h parser.tab.c parser.tab.h parser.output simple_script_language attributes.o lexer.o
+	rm -f *.o *~ lex.c lex.yy.c bison.c tok.h parser.tab.c parser.tab.h parser.output simple_script_language attributes.o
