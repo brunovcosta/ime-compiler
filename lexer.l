@@ -46,7 +46,7 @@
 "!"                   {return NOT;}
 "true"                {return const_true;}
 "false"               {return const_false;}
-\[(.*,)*\]            {return const_false;}
+\[(.*,)*\]            {return const_array;}
 [0-9]+                {return const_number;}
 \"[a-zA-Z]+\"         {return const_string;}
 '.'                   {return const_char;}

@@ -5,6 +5,7 @@
 #include "./helpers/shared.h"
 #define db(x) printf(#x);printf(": %d\n",x);
 
+
 void yyerror(const char *error) {
     fprintf(stderr,"error: %s\n na linha %d",error,line);
 }
@@ -42,6 +43,16 @@ pobject p, t, f, t1, t2;
 
 %union {
 	int nont;
+
+	char code[500];
+
+	int endParentCheckpoint;
+	int beginParentCheckpoint;
+
+	int variableOrder;
+
+	int nVariables;
+	int nParams;
 	union {
 		struct {
 			pobject obj;
@@ -94,14 +105,22 @@ pobject p, t, f, t1, t2;
 %%
 /* Um Programa (P) é formado por uma Lista de Declarações Externas (LDE) */
 
-P : LDE ;
+P : LDE {
+	printf("%s",$<code>1);
+};
 
-LDE : LDE DE 
-    | DE ;
+LDE : LDE DE {
+		sprintf($<code>$,"%s\n%s",$<code>1,$<code>2);
+	}
+    | DE {
+		$<code>$ = $<code>1;
+	};
 
 /* Uma Declaração Externa (DE) é uma Declaração de Função (DF) ou uma Declaração de Tipo (DT) ou uma Declaração de Variáveis (DV): */
 
-DE : DF 
+DE : DF {
+	$<code>$ = $<code>1;
+}
    | DT ;
 
 /* Um Tipo (T) pode ser a palavra ‘integer’ ou a palavra ‘char’ ou a palavra ‘boolean’ ou a palavra ‘string’ ou um ID representando um tipo previamente declarado: */
@@ -150,23 +169,50 @@ DC : DC SEMI_COLON LI COLON T
 /* Uma Declaração de Função é formada pela palavra ‘function’ seguida pelo nome da função (ID) seguida da Lista de Parâmetros (LP) entre parênteses seguida por ‘:’ e pelo Tipo (T) de retorno seguido pelo Bloco (B): */
 
 DF : FUNCTION IDD NB LEFT_PARENTHESIS LP RIGHT_PARENTHESIS COLON T B {
-  EndBlock();
+	EndBlock();
+	int n = getFunctionNumber();
+	int p = $<nParams>5;
+	int v = $<nVariables>9;
+	sprintf($<code>$,"%s %d %d %d\n%s\n%s\n",
+		"BEGIN_FUNC",n,p,v,
+		$<code>9,
+		"END_FUNC");
 };
 
-LP : LP COMMA IDD COLON T 
-   | IDD COLON T
-   |  ;
+LP : LP COMMA IDD COLON T {
+	$<nParams>$ = $<nParams>1 + 1;
+}
+   | IDD COLON T {
+	$<nParams>$ = 1;
+}
+   | {
+	$<nParams>$ = 0;
+} ;
 
 /* Um Bloco (B) é delimitado por chave e contém uma Lista de Declaração de Variáveis (LDV) seguida por uma Lista de Statements (LS) ou Comandos: */
 
-B : LEFT_BRACES LDV LS RIGHT_BRACES
-  | LEFT_BRACES LS RIGHT_BRACES ; /* self modification */
+B : LEFT_BRACES LDV LS RIGHT_BRACES {
+	$<nVariables>$ = $<nVariables>2;
+	sprintf($<code>$,"%s\n",$<code>3);jhdskhfskjdhfjshfkjshdfjkhsjkfhjdkhfjkshdfjkhjksfhskjfhdksjfjksdhfjks
+}
+  | LEFT_BRACES LS RIGHT_BRACES {
+	$<nVariables>$ = 0;
+	sprintf($<code>$,"%s\n",$<code>2);
+};
 
-LDV : LDV DV 
-    | DV ;
+LDV : LDV DV {
+	$<nVariables>$ = $<nVariables>1 + 1;
+}
+    | DV {
+	$<nVariables>$ = 1;
+};
 
-LS : LS S 
-   | S ;
+LS : LS S {
+	sprintf($<code>$,"%s\n%s\n",$<code>1,$<code>2);
+}
+   | S {
+	sprintf($<code>$,"%s\n",$<code>1);
+};
 
 /* Uma Declaração de Variáveis (DV) é formada pela palavra ‘var’ seguida por uma Lista de Identificadores (LI), separados por ‘,’, seguida de ‘:’ e do Tipo (T) das variáveis declaradas com um ‘;’ ao final. */
 
@@ -177,59 +223,255 @@ LI : LI COMMA IDD
 
 /* Um Statement (S) pode ser um comando de seleção, repetição, um bloco, uma atricbuição ou um comando de controle de fluxo de repetição (‘break’ ou ‘continue’): */
 
-S : IF LEFT_PARENTHESIS E RIGHT_PARENTHESIS S %prec "then"
-  | IF LEFT_PARENTHESIS E RIGHT_PARENTHESIS S ELSE S
-  | WHILE LEFT_PARENTHESIS E RIGHT_PARENTHESIS S 
-  | DO S WHILE LEFT_PARENTHESIS E RIGHT_PARENTHESIS SEMI_COLON 
-  | B 
-  | LV ASSIGN E SEMI_COLON 
-  | BREAK SEMI_COLON 
-  | CONTINUE SEMI_COLON
+S : IF LEFT_PARENTHESIS E RIGHT_PARENTHESIS S %prec "then" {
+	int l1 = getCheckpoint();
+	sprintf($<code>$,"%s\n%s%d\n%s\n%c%d%c\n",
+		$<code>3,
+		"TJMP L",l1
+		$<code>5,
+		'L',l1,':');
+}
+  | IF LEFT_PARENTHESIS E RIGHT_PARENTHESIS S ELSE S {
+	int l1 = getCheckpoint();
+	int l2 = getCheckpoint();
+	sprintf($<code>$,"%s\n%s%d\n%s\n%c%d%c\n%s\n%c%s%c",
+		$<code>3,
+		"TJMP L",l1
+		$<code>5,
+		'L',l1,':',
+		$<code>7,
+		'L',l2,':');
+}
+  | WHILE LEFT_PARENTHESIS E RIGHT_PARENTHESIS S {
+	int l1 = getCheckpoint();
+	int l2 = getCheckpoint();
+
+	sprintf($<code>$,"%c%s%c\n%s\n%s%d\n%s\n%s%d\n%c%d%c\n",
+		'L',l1,':',
+		$<code>4,
+		"TJMP L",l2,
+		$<code>5,
+		"JMP L",l1,
+		'L',l2,':');
+
+	$<beginParentCheckpoint>5 = l1;
+	$<endParentCheckpoint>5 = l2;
+}
+  | DO S WHILE LEFT_PARENTHESIS E RIGHT_PARENTHESIS SEMI_COLON {
+	int l1 = getCheckpoint();
+	sprintf($<code>$,"%c%d%c\n%s\n%s\n%s\n%s\n%d\n"
+		'L',l1,':',
+		$<code>2,
+		$<code>5,
+		"NOT",
+		"TJMP L",l1);
+
+	$<beginParentCheckpoint>5 = l1;
+	$<endParentCheckpoint>5 = l2;
+}
+  | B {
+	$<code>$ = $<code>1;
+}
+  | LV ASSIGN E SEMI_COLON
+  | BREAK SEMI_COLON {
+	sprintf($<code>$,"JMP L%d",$<endParentCheckpoint>$);
+  }
+  | CONTINUE SEMI_COLON {
+	sprintf($<code>$,"JMP L%d",$<beginParentCheckpoint>$);
+  }
   | RETURN E SEMI_COLON ;
   
 /* Uma Expressão (E) pode ser composta por operadores lógicos, relacionais ou aritméticos, além de permitir o acesso aos componentes dos tipos agregados e da atribuição de valores: */
 
-E : E AND L 
-  | E OR L 
-  | L ;
+E : E AND L {
+	sprintf($<code>$,"%s\n%s\n%s",
+		$<code>1,
+		$<code>3,
+		"AND");	
+}
+  | E OR L {
+	sprintf($<code>$,"%s\n%s\n%s",
+		$<code>1,
+		$<code>3,
+		"OR");
+  }
+  | L {
+	  sprintf($<code>$, "%s",
+	  	$<code>1);
+  } ;
 
-L : L LESS_THAN R 
-  | L GREATER_THAN R 
-  | L LESS_OR_EQUAL R 
-  | L GREATER_OR_EQUAL R 
-  | L EQUALS R 
-  | L NOT_EQUAL R 
-  | R ;
+L : L LESS_THAN R {
+	sprintf($<code>$, "%s\n%s\n%s",
+		$<code>1,
+		$<code>3,
+		"LT");
+}
+  | L GREATER_THAN R {
+	sprintf($<code>$, "%s\n%s\n%s",
+		$<code>1,
+		$<code>3,
+		"GT");
+  }
+  | L LESS_OR_EQUAL R {
+	sprintf($<code>$, "%s\n%s\n%s",
+		$<code>1,
+		$<code>3,
+		"LE");
+  }
+  | L GREATER_OR_EQUAL R {
+	sprintf($<code>$, "%s\n%s\n%s",
+		$<code>1,
+		$<code>3,
+		"GE");
+  }
+  | L EQUALS R {
+	sprintf($<code>$, "%s\n%s\n%s",
+		$<code>1,
+		$<code>3,
+		"EQ");
+  }
+  | L NOT_EQUAL R {
+	sprintf($<code>$, "%s\n%s\n%s",
+		$<code>1,
+		$<code>3,
+		"NE");
+  }
+  | R {
+	sprintf($<code>$, "%s",
+		$<code>1);
+  } ;
 
-R : R PLUS Y 
-  | R MINUS Y 
-  | Y ;
+R : R PLUS Y {
+	sprintf($<code>$, "%s\n%s\n%s",
+		$<code>1,
+		$<code>3,
+		"ADD");
+}
+  | R MINUS Y {
+	sprintf($<code>$, "%s\n%s\n%s",
+		$<code>1,
+		$<code>3,
+		"SUB");
+  }
+  | Y {
+	sprintf($<code>$, "%s",
+		$<code>1);
+  } ;
 
-Y : Y TIMES F 
-  | Y DIVIDE F 
-  | F ;
+Y : Y TIMES F {
+	sprintf($<code>$, "%s\n%s\n%s",
+		$<code>1,
+		$<code>3,
+		"MUL");
+}
+  | Y DIVIDE F {
+	sprintf($<code>$, "%s\n%s\n%s",
+		$<code>1,
+		$<code>3,
+		"DIV");
+  }
+  | F {
+	sprintf($<code>$, "%s\n",
+		$<code>1);
+  } ;
 
-F : LV 
-  | PLUS_PLUS LV 
+F : LV {
+		sprintf($<code>$, "%s\n%s%d\n",
+		$<code>1,
+		"DE_REF", 
+		$<variableOrder>$)	
+	}
+  | PLUS_PLUS LV {
+		// yellow sign
+	$<variableOrder>$ = 1;
+	sprintf($<code>$,"%s\n%s\n%s%d\n%s\n%s%d\n%s%d",
+		$<code>2,
+		"DUP",
+		"DUP",
+		"DE_REF ",$<variableOrder>$,
+		"INC",
+		"STORE_REF ",$<variableOrder>$,
+		"DE_REF ",$<variableOrder>$);
+}
   | MINUS_MINUS LV 
+	{
+		sprintf($<code>$, "%s\n%s\n%s\n%s\n%s\n%s\n%s",
+		$<code>2,		
+		"DUP",
+		"DUP",
+		"DE_REF 1", 
+		"DEC",
+		"STORE_REF",
+		"DE_REF 1")	
+	}
   | LV PLUS_PLUS 
-  | LV MINUS_MINUS 
+	{
+		sprintf($<code>$, "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s",
+		$<code>2,		
+		"DUP",
+		"DUP",
+		"DE_REF 1", 
+		"INC",
+		"STORE_REF",
+		"DE_REF 1",
+		"DEC")	
+	}
+  | LV MINUS_MINUS {
+		sprintf($<code>$, "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s",
+		$<code>2,		
+		"DUP",
+		"DUP",
+		"DE_REF 1", 
+		"DEC",
+		"STORE_REF",
+		"DE_REF 1",
+		"DEC")		
+	}
   | LEFT_PARENTHESIS E RIGHT_PARENTHESIS 
   | IDU LEFT_PARENTHESIS LE RIGHT_PARENTHESIS 
-  | MINUS F 
-  | NOT 
-  | TRUE 
-  | FALSE
-  | CHR
-  | STR
-  | NUM ;
+  | MINUS F {
+	  sprintf($<code>$, "%s\n%s\n",
+	  	$<code>2,
+		"NEG");
+  }
+  | NOT F {
+	  sprintf($<code>$, "%s\n%s\n",
+	  	$<code>2,
+		"NOT");
+  }
+  | TRUE {
+	  sprintf($<code>$, "%s\n",
+		"LOAD_TRUE");
+  }
+  | FALSE {
+	  sprintf($<code>$, "%s\n",
+		"LOAD_FALSE");
+  }
+  | CHR {
+	  int n = getConstantNumber();
+	  sprintf($<code>$, "LOAD_CONST %d\n", n);
+  }
+  | STR {
+	  int n = getConstantNumber();
+	  sprintf($<code>$, "LOAD_CONST %d\n", n);
+  }
+  | NUM {
+	  int n = getConstantNumber();
+	  sprintf($<code>$, "LOAD_CONST %d\n", n);
+  } ;
 
-LE : LE COMMA E
-   | E ;
+LE : LE COMMA E {
+		sprintf($<code>$, "%s\n%s\n", $<code>1, $<code>3);
+	}
+  | E {
+		sprintf($<code>$, "%s\n", $<code>1);		 		 		 		 		 
+	} ;
 
 LV : LV DOT IDU
    | LV LEFT_SQUARE E RIGHT_SQUARE
-   | IDU ;
+   | IDU {
+		 // TODO
+   };
 
 IDD : id {
   $<_.ID_.name>$ = ids[currentLevel][secondaryToken].name;
