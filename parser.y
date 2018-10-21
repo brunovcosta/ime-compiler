@@ -242,10 +242,8 @@ IDD : id {
 IDU : id {
   char *name =ids[secondaryToken].name;
   $<_.ID_.name>$ = name;
-  printf("\n\n%s\n\n", ids[0].name);
-  printf("\n\n%d\n\n", secondaryToken);
   if( searchName( name ) == -1 ) {
-        printf("é o que? macho?\n");
+        printf("\n\nTentando usar uma variável que não foi definida no escopo!\n\n\n");
         addName(name);
   }
 };
