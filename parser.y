@@ -3,18 +3,19 @@
 #include <string.h>
 #include "./parser.tab.h"
 #include "./helpers/shared.h"
-#include "./helpers/lexer.h"
 #define db(x) printf(#x);printf(": %d\n",x);
 
-int secondaryToken;
-
- 
 void yyerror(const char *error) {
     fprintf(stderr,"error: %s\n na linha %d",error,line);
 }
 
+int hadWarning = 0;
+
 int yywrap() {
-    puts("deu bom!");
+	if(hadWarning)
+		puts("compilado com warnings!\n");
+	else
+		puts("compilado com sucesso!\n");
     return 1;
 } 
   
@@ -231,19 +232,19 @@ LV : LV DOT IDU
    | IDU ;
 
 IDD : id {
-  db(secondaryToken);
-  printf("reduziu IDD: %s\n",ids[secondaryToken].name);
-  //$<_.ID_.name>$ = ids[secondaryToken].name;
-  //if( ids[secondaryToken].count  > 1 ) {
-  //  printf("ta tentando redefinir!\n");
-  //}
+  $<_.ID_.name>$ = ids[currentLevel][secondaryToken].name;
+  if( ids[currentLevel][secondaryToken].count  > 1 ) {
+    printf("scope error: trying to redefine\n");
+	exit(1);
+  }
 };
 
 IDU : id {
-  char *name =ids[secondaryToken].name;
+  char *name =ids[currentLevel][secondaryToken].name;
   $<_.ID_.name>$ = name;
   if( searchName( name ) == -1 ) {
-        printf("\n\nTentando usar uma variável que não foi definida no escopo!\n\n\n");
+        printf("scope warning: trying to use unexisting\n");
+		hadWarning = 1;
         addName(name);
   }
 };

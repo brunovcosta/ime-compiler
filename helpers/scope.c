@@ -1,11 +1,44 @@
 #include <stdlib.h>
+#include<string.h>
 #include <stdio.h>
-#include "./lexer.h"
 
 #include "./scope.h"
 
+
 //TODO what is the max nest level
 #define MAX_NEST_LEVEL 10
+
+
+int idsCount[LEVELS]={};
+int secondaryToken=0;
+int currentLevel = 0;
+
+int searchName(char *name){
+	int pos;
+	int level;
+	for(level=0;level < currentLevel;level++){
+		for(pos=0;pos<idsCount[level];pos++){
+			if(strcmp(name,ids[level][pos].name) == 0){
+				return pos;
+			}
+		}
+	}
+	return -1;
+}
+
+int addName(char *name){
+	int pos;
+	for(pos=0;pos<idsCount[currentLevel];pos++){
+		if(strcmp(name,ids[currentLevel][pos].name) == 0){ //achou
+			ids[currentLevel][pos].count++;
+			return pos;
+		}
+	}
+	idsCount[currentLevel]++;
+	strcpy(ids[currentLevel][pos].name,name);
+	ids[currentLevel][pos].count=1;
+	return pos;
+}
 
 pobject SymbolTable[MAX_NEST_LEVEL];
 pobject SymbolTableLast[MAX_NEST_LEVEL];
@@ -21,53 +54,3 @@ int EndBlock(void) {
     return --nCurrentLevel;
 }
 
-//pobject Define(int aName) {
-//    pobject obj = (pobject)malloc(sizeof(object));
-//    obj->nName = aName;
-//    obj->pNext = NULL;
-//    if (SymbolTable[nCurrentLevel] == NULL)
-//    {
-//        SymbolTable[nCurrentLevel] = obj;
-//        SymbolTableLast[nCurrentLevel] = obj;
-//    }
-//    else
-//    {
-//        SymbolTableLast[nCurrentLevel]->pNext = obj;
-//        SymbolTableLast[nCurrentLevel] = obj;
-//    }
-//    return obj;
-//}
-//
-//pobject Search(int aName)
-//{
-//    pobject obj = SymbolTable[nCurrentLevel];
-//    while (obj != NULL)
-//    {
-//        if (obj->nName == aName)
-//            break;
-//        else
-//            obj = obj->pNext;
-//    }
-//    return obj;
-//}
-//
-//pobject Find(int aName)
-//{
-//    int i;
-//    pobject obj = NULL;
-//    for (i = nCurrentLevel; i >= 0; --i)
-//    {
-//        obj = SymbolTable[i];
-//        while (obj != NULL)
-//        {
-//            if (obj->nName == aName)
-//                break;
-//            else
-//                obj = obj->pNext;
-//        }
-//        if (obj != NULL)
-//            break;
-//    }
-//    return obj;
-//}
-//

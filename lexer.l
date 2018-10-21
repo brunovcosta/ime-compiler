@@ -8,50 +8,50 @@
 %}
 %%
 
-"else"                {ECHO;printf("\t\t->\n");return ELSE;}
-"break"               {ECHO;printf("\t\t->\n");return BREAK;}
-"while"               {ECHO;printf("\t\t->\n");return WHILE;}
-"var"                 {ECHO;printf("\t\t->\n");return VAR;}
-"="                   {ECHO;printf("\t\t->\n");return ASSIGN;}
-"continue"            {ECHO;printf("\t\t->\n");return CONTINUE;}
-"function"            {ECHO;printf("\t\t->\n");return FUNCTION;}
-"string"              {ECHO;printf("\t\t->\n");return STRING;}
-"if"                  {ECHO;printf("\t\t->\n");return IF;}
-"boolean"             {ECHO;printf("\t\t->\n");return BOOLEAN;}
-"char"                {ECHO;printf("\t\t->\n");return CHAR;}
-"type"                {ECHO;printf("\t\t->\n");return TYPE;}
-"integer"             {ECHO;printf("\t\t->\n");return INTEGER;}
-"return"              {ECHO;printf("\t\t->\n");return RETURN;}
-"do"                  {ECHO;printf("\t\t->\n");return DO;}
-"of"                  {ECHO;printf("\t\t->\n");return OF;}
-"struct"              {ECHO;printf("\t\t->\n");return STRUCT;}
-">="                  {ECHO;printf("\t\t->\n");return GREATER_OR_EQUAL;}
-"<="                  {ECHO;printf("\t\t->\n");return LESS_OR_EQUAL;}
-">"                   {ECHO;printf("\t\t->\n");return GREATER_THAN;}
-"<"                   {ECHO;printf("\t\t->\n");return LESS_THAN;}
-"("                   {ECHO;printf("\t\t->\n");return LEFT_PARENTHESIS;}
-")"                   {ECHO;printf("\t\t->\n");return RIGHT_PARENTHESIS;}
-"+"                   {ECHO;printf("\t\t->\n");return PLUS;}
-"-"                   {ECHO;printf("\t\t->\n");return MINUS;}
-"++"                  {ECHO;printf("\t\t->\n");return PLUS_PLUS;}
-"--"                  {ECHO;printf("\t\t->\n");return MINUS_MINUS;}
-"["                   {ECHO;printf("\t\t->\n");return LEFT_SQUARE;}
-"]"                   {ECHO;printf("\t\t->\n");return RIGHT_SQUARE;}
-"{"                   {ECHO;printf("\t\t->\n");return LEFT_BRACES;}
-"}"                   {ECHO;printf("\t\t->\n");return RIGHT_BRACES;}
-":"                   {ECHO;printf("\t\t->\n");return COLON;}
-";"                   {ECHO;printf("\t\t->\n");return SEMI_COLON;}
-"."                   {ECHO;printf("\t\t->\n");return DOT;}
-","                   {ECHO;printf("\t\t->\n");return COMMA;}
-"!"                   {ECHO;printf("\t\t->\n");return NOT;}
-"true"                {ECHO;printf("\t\t->\n");return const_true;}
-"false"               {ECHO;printf("\t\t->\n");return const_false;}
-\[(.*,)*\]            {ECHO;printf("\t\t->\n");return const_false;}
-[0-9]+                {ECHO;printf("\t\t->\n");return const_number;}
-\"[a-zA-Z]+\"         {ECHO;printf("\t\t->\n");return const_string;}
-'.'                   {ECHO;printf("\t\t->\n");return const_char;}
-[a-zA-Z]+             {ECHO;printf("\t\t-> (%s)\n",yytext);secondaryToken = addName(yytext);return id;}
+"else"                {return ELSE;}
+"break"               {return BREAK;}
+"while"               {return WHILE;}
+"var"                 {return VAR;}
+"="                   {return ASSIGN;}
+"continue"            {return CONTINUE;}
+"function"            {return FUNCTION;}
+"string"              {return STRING;}
+"if"                  {return IF;}
+"boolean"             {return BOOLEAN;}
+"char"                {return CHAR;}
+"type"                {return TYPE;}
+"integer"             {return INTEGER;}
+"return"              {return RETURN;}
+"do"                  {return DO;}
+"of"                  {return OF;}
+"struct"              {return STRUCT;}
+">="                  {return GREATER_OR_EQUAL;}
+"<="                  {return LESS_OR_EQUAL;}
+">"                   {return GREATER_THAN;}
+"<"                   {return LESS_THAN;}
+"("                   {return LEFT_PARENTHESIS;}
+")"                   {return RIGHT_PARENTHESIS;}
+"+"                   {return PLUS;}
+"-"                   {return MINUS;}
+"++"                  {return PLUS_PLUS;}
+"--"                  {return MINUS_MINUS;}
+"["                   {return LEFT_SQUARE;}
+"]"                   {return RIGHT_SQUARE;}
+"{"                   {return LEFT_BRACES;}
+"}"                   {return RIGHT_BRACES;}
+":"                   {return COLON;}
+";"                   {return SEMI_COLON;}
+"."                   {return DOT;}
+","                   {return COMMA;}
+"!"                   {return NOT;}
+"true"                {return const_true;}
+"false"               {return const_false;}
+\[(.*,)*\]            {return const_false;}
+[0-9]+                {return const_number;}
+\"[a-zA-Z]+\"         {return const_string;}
+'.'                   {return const_char;}
+[a-zA-Z]+             {secondaryToken = addName(yytext);return id;}
 [ \t\v\f]             { /* ignore blank characters */ }
 \n                    {++line;}
-.                     { puts("deu ruim!"); }
+.                     { puts("lexer error: invalid character"); exit(1); }
 
