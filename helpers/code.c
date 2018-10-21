@@ -17,13 +17,13 @@ void generateCode(char *code,int num, ...){
 }
 
 int getConstantNumber(){
-	return ++constantNumber;
+	return constantNumber++;
 }
 
 int getFunctionNumber(){
-	return ++functionNumber;
+	return functionNumber++;
 }
 
 int getCheckpoint(){
-	return ++checkpoint;
+	return checkpoint++;
 }

@@ -42,17 +42,20 @@ pobject p, t, f, t1, t2;
 %token ERR_REDCL ERR_NO_DECL ERR_TYPE_EXPECTED ERR_BOOL_TYPE_EXPECTED ERR_TYPE_MISMATCH ERR_INVALID_TYPE ERR_KIND_NOT_STRUCT ERR_FIELD_NOT_DECL ERR_KIND_NOT_ARRAY ERR_INVALID_INDEX_TYPE ERR_KIND_NOT_VAR ERR_KIND_NOT_FUNCTION ERR_TOO_MANY_ARGS ERR_PARAM_TYPE ERR_TOO_FEW_ARGS ERR_RETURN_TYPE_MISMATCH
 
 %union {
-	int nont;
+	struct {
+		int nont;
 
-	char code[500];
+		char *code;
 
-	int endParentCheckpoint;
-	int beginParentCheckpoint;
+		int endParentCheckpoint;
+		int beginParentCheckpoint;
 
-	int variableOrder;
+		int variableOrder;
 
-	int nVariables;
-	int nParams;
+		int nVariables;
+		int nParams;
+	} attr;
+
 	union {
 		struct {
 			pobject obj;
@@ -106,41 +109,45 @@ pobject p, t, f, t1, t2;
 /* Um Programa (P) é formado por uma Lista de Declarações Externas (LDE) */
 
 P : LDE {
-	printf("%s",$<code>1);
+	printf("%s",$<attr.code>1);
 };
 
 LDE : LDE DE {
-		sprintf($<code>$,"%s\n%s",$<code>1,$<code>2);
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+		sprintf($<attr.code>$,"%s\n%s",$<attr.code>1,$<attr.code>2);
 	}
     | DE {
-		$<code>$ = $<code>1;
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+		sprintf($<attr.code>$, $<attr.code>1);
 	};
 
 /* Uma Declaração Externa (DE) é uma Declaração de Função (DF) ou uma Declaração de Tipo (DT) ou uma Declaração de Variáveis (DV): */
 
 DE : DF {
-	$<code>$ = $<code>1;
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$,$<attr.code>1);
 }
 	| DT {
-		$<code>$ = $<code>1;
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+		sprintf($<attr.code>$,$<attr.code>1);
 } ;
 
 /* Um Tipo (T) pode ser a palavra ‘integer’ ou a palavra ‘char’ ou a palavra ‘boolean’ ou a palavra ‘string’ ou um ID representando um tipo previamente declarado: */
 
 T : INTEGER {
-	$<nont>$ = T;
+	$<attr.nont>$ = T;
 	$<_.T_.type>$ = pInt;
 }
   | CHAR {
-	$<nont>$ = T;
+	$<attr.nont>$ = T;
 	$<_.T_.type>$ = pChar;
 }
   | BOOLEAN {
-	$<nont>$ = T;
+	$<attr.nont>$ = T;
 	$<_.T_.type>$ = pBool;
 }
   | STRING {
-	$<nont>$ = T;
+	$<attr.nont>$ = T;
 	$<_.T_.type>$ = pString;
 }
   | IDU{
@@ -150,7 +157,7 @@ T : INTEGER {
 	} else {
 		$<_.T_.type>$ = pUniversal;
 	}
-	$<nont>$ = T;
+	$<attr.nont>$ = T;
 };
 
 /* Uma Declaração de Tipo (DT) pode ser uma declaração de um tipo vetor ou um tipo estrutura ou um tipo sinônimo. */
@@ -173,47 +180,54 @@ DC : DC SEMI_COLON LI COLON T
 DF : FUNCTION IDD NB LEFT_PARENTHESIS LP RIGHT_PARENTHESIS COLON T B {
 	EndBlock();
 	int n = getFunctionNumber();
-	int p = $<nParams>5;
-	int v = $<nVariables>9;
-	sprintf($<code>$,"%s %d %d %d\n%s\n%s\n",
+	int p = $<attr.nParams>5;
+	int v = $<attr.nParams>9;
+
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$,"%s %d %d %d\n%s\n%s\n",
 		"BEGIN_FUNC",n,p,v,
-		$<code>9,
+		$<attr.code>9,
 		"END_FUNC");
 };
 
 LP : LP COMMA IDD COLON T {
-	$<nParams>$ = $<nParams>1 + 1;
+	$<attr.nParams>$ = $<attr.nParams>1 + 1;
 }
    | IDD COLON T {
-	$<nParams>$ = 1;
+	$<attr.nParams>$ = 1;
 }
    | {
-	$<nParams>$ = 0;
+	$<attr.nParams>$ = 0;
 } ;
 
 /* Um Bloco (B) é delimitado por chave e contém uma Lista de Declaração de Variáveis (LDV) seguida por uma Lista de Statements (LS) ou Comandos: */
 
 B : LEFT_BRACES LDV LS RIGHT_BRACES {
-	$<nVariables>$ = $<nVariables>2;
-	sprintf($<code>$,"%s\n",$<code>3);jhdskhfskjdhfjshfkjshdfjkhsjkfhjdkhfjkshdfjkhjksfhskjfhdksjfjksdhfjks
+	$<attr.nParams>$ = $<attr.nParams>2;
+
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$,"%s\n",$<attr.code>3);
 }
   | LEFT_BRACES LS RIGHT_BRACES {
-	$<nVariables>$ = 0;
-	sprintf($<code>$,"%s\n",$<code>2);
+		$<attr.code>$ = (char*) malloc(50000*sizeof(char));
+		sprintf($<attr.code>$,$<attr.code>2);
+		$<attr.nParams>$ = 0;
 };
 
 LDV : LDV DV {
-	$<nVariables>$ = $<nVariables>1 + 1;
+	$<attr.nVariables>$ = $<attr.nVariables>1 + 1;
 }
     | DV {
-	$<nVariables>$ = 1;
+	$<attr.nVariables>$ = 1;
 };
 
 LS : LS S {
-	sprintf($<code>$,"%s\n%s\n",$<code>1,$<code>2);
+		$<attr.code>$ = (char*) malloc(50000*sizeof(char));
+	sprintf($<attr.code>$,"%s\n%s",$<attr.code>1,$<attr.code>2);
 }
    | S {
-	sprintf($<code>$,"%s\n",$<code>1);
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$,"%s",$<attr.code>1);
 };
 
 /* Uma Declaração de Variáveis (DV) é formada pela palavra ‘var’ seguida por uma Lista de Identificadores (LI), separados por ‘,’, seguida de ‘:’ e do Tipo (T) das variáveis declaradas com um ‘;’ ao final. */
@@ -227,246 +241,288 @@ LI : LI COMMA IDD
 
 S : IF LEFT_PARENTHESIS E RIGHT_PARENTHESIS S %prec "then" {
 	int l1 = getCheckpoint();
-	sprintf($<code>$,"%s\n%s%d\n%s\n%c%d%c\n",
-		$<code>3,
-		"TJMP L",l1
-		$<code>5,
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$,"%s\n%s%d\n%s\n%c%d%c\n",
+		$<attr.code>3,
+		"TJMP L",l1,
+		$<attr.code>5,
 		'L',l1,':');
 }
   | IF LEFT_PARENTHESIS E RIGHT_PARENTHESIS S ELSE S {
 	int l1 = getCheckpoint();
 	int l2 = getCheckpoint();
-	sprintf($<code>$,"%s\n%s%d\n%s\n%c%d%c\n%s\n%c%s%c",
-		$<code>3,
-		"TJMP L",l1
-		$<code>5,
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$,"%s\n%s%d\n%s\n%c%d%c\n%s\n%c%s%c",
+		$<attr.code>3,
+		"TJMP L",l1,
+		$<attr.code>5,
 		'L',l1,':',
-		$<code>7,
+		$<attr.code>7,
 		'L',l2,':');
 }
   | WHILE LEFT_PARENTHESIS E RIGHT_PARENTHESIS S {
 	int l1 = getCheckpoint();
 	int l2 = getCheckpoint();
 
-	sprintf($<code>$,"%c%s%c\n%s\n%s%d\n%s\n%s%d\n%c%d%c\n",
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$,"%c%s%c\n%s\n%s%d\n%s\n%s%d\n%c%d%c\n",
 		'L',l1,':',
-		$<code>4,
+		$<attr.code>4,
 		"TJMP L",l2,
-		$<code>5,
+		$<attr.code>5,
 		"JMP L",l1,
 		'L',l2,':');
 
-	$<beginParentCheckpoint>5 = l1;
-	$<endParentCheckpoint>5 = l2;
+	$<attr.beginParentCheckpoint>5 = l1;
+	$<attr.endParentCheckpoint>5 = l2;
 }
   | DO S WHILE LEFT_PARENTHESIS E RIGHT_PARENTHESIS SEMI_COLON {
 	int l1 = getCheckpoint();
-	sprintf($<code>$,"%c%d%c\n%s\n%s\n%s\n%s\n%d\n"
+	int l2 = getCheckpoint();
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$,"%c%d%c\n%s\n%s\n%s\n%s\n%d\n%c%d%c",
 		'L',l1,':',
-		$<code>2,
-		$<code>5,
+		$<attr.code>2,
+		$<attr.code>5,
 		"NOT",
-		"TJMP L",l1);
+		"TJMP L",l1,
+		'L',l2,':');
 
-	$<beginParentCheckpoint>5 = l1;
-	$<endParentCheckpoint>5 = l2;
+	$<attr.beginParentCheckpoint>5 = l1;
+	$<attr.endParentCheckpoint>5 = l2;
 }
   | B {
-	$<code>$ = $<code>1;
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$,$<attr.code>1);
 }
   | LV ASSIGN E SEMI_COLON
   | BREAK SEMI_COLON {
-	sprintf($<code>$,"JMP L%d",$<endParentCheckpoint>$);
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$,"JMP L%d",$<attr.endParentCheckpoint>$);
   }
   | CONTINUE SEMI_COLON {
-	sprintf($<code>$,"JMP L%d",$<beginParentCheckpoint>$);
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$,"JMP L%d",$<attr.beginParentCheckpoint>$);
   }
-  | RETURN E SEMI_COLON ;
+  | RETURN E SEMI_COLON {
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+		sprintf($<attr.code>$,"TESTELOKO");
+  };
   
 /* Uma Expressão (E) pode ser composta por operadores lógicos, relacionais ou aritméticos, além de permitir o acesso aos componentes dos tipos agregados e da atribuição de valores: */
 
 E : E AND L {
-	sprintf($<code>$,"%s\n%s\n%s",
-		$<code>1,
-		$<code>3,
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$,"%s\n%s\n%s",
+		$<attr.code>1,
+		$<attr.code>3,
 		"AND");	
 }
   | E OR L {
-	sprintf($<code>$,"%s\n%s\n%s",
-		$<code>1,
-		$<code>3,
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$,"%s\n%s\n%s",
+		$<attr.code>1,
+		$<attr.code>3,
 		"OR");
   }
   | L {
-	  sprintf($<code>$, "%s",
-	  	$<code>1);
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	  sprintf($<attr.code>$, "%s",
+	  	$<attr.code>1);
   } ;
 
 L : L LESS_THAN R {
-	sprintf($<code>$, "%s\n%s\n%s",
-		$<code>1,
-		$<code>3,
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$, "%s\n%s\n%s",
+		$<attr.code>1,
+		$<attr.code>3,
 		"LT");
 }
   | L GREATER_THAN R {
-	sprintf($<code>$, "%s\n%s\n%s",
-		$<code>1,
-		$<code>3,
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$, "%s\n%s\n%s",
+		$<attr.code>1,
+		$<attr.code>3,
 		"GT");
   }
   | L LESS_OR_EQUAL R {
-	sprintf($<code>$, "%s\n%s\n%s",
-		$<code>1,
-		$<code>3,
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$, "%s\n%s\n%s",
+		$<attr.code>1,
+		$<attr.code>3,
 		"LE");
   }
   | L GREATER_OR_EQUAL R {
-	sprintf($<code>$, "%s\n%s\n%s",
-		$<code>1,
-		$<code>3,
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$, "%s\n%s\n%s",
+		$<attr.code>1,
+		$<attr.code>3,
 		"GE");
   }
   | L EQUALS R {
-	sprintf($<code>$, "%s\n%s\n%s",
-		$<code>1,
-		$<code>3,
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$, "%s\n%s\n%s",
+		$<attr.code>1,
+		$<attr.code>3,
 		"EQ");
   }
   | L NOT_EQUAL R {
-	sprintf($<code>$, "%s\n%s\n%s",
-		$<code>1,
-		$<code>3,
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$, "%s\n%s\n%s",
+		$<attr.code>1,
+		$<attr.code>3,
 		"NE");
   }
   | R {
-	sprintf($<code>$, "%s",
-		$<code>1);
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$, "%s",
+		$<attr.code>1);
   } ;
 
 R : R PLUS Y {
-	sprintf($<code>$, "%s\n%s\n%s",
-		$<code>1,
-		$<code>3,
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$, "%s\n%s\n%s",
+		$<attr.code>1,
+		$<attr.code>3,
 		"ADD");
 }
   | R MINUS Y {
-	sprintf($<code>$, "%s\n%s\n%s",
-		$<code>1,
-		$<code>3,
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$, "%s\n%s\n%s",
+		$<attr.code>1,
+		$<attr.code>3,
 		"SUB");
   }
   | Y {
-	sprintf($<code>$, "%s",
-		$<code>1);
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$, "%s",
+		$<attr.code>1);
   } ;
 
 Y : Y TIMES F {
-	sprintf($<code>$, "%s\n%s\n%s",
-		$<code>1,
-		$<code>3,
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$, "%s\n%s\n%s",
+		$<attr.code>1,
+		$<attr.code>3,
 		"MUL");
 }
   | Y DIVIDE F {
-	sprintf($<code>$, "%s\n%s\n%s",
-		$<code>1,
-		$<code>3,
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$, "%s\n%s\n%s",
+		$<attr.code>1,
+		$<attr.code>3,
 		"DIV");
   }
   | F {
-	sprintf($<code>$, "%s\n",
-		$<code>1);
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$, "%s\n",
+		$<attr.code>1);
   } ;
 
 F : LV {
-		sprintf($<code>$, "%s\n%s%d\n",
-		$<code>1,
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+		sprintf($<attr.code>$, "%s\n%s%d\n",
+		$<attr.code>1,
 		"DE_REF", 
-		$<variableOrder>$)	
+		$<attr.variableOrder>$);	
 	}
   | PLUS_PLUS LV {
 		// yellow sign
-	$<variableOrder>$ = 1;
-	sprintf($<code>$,"%s\n%s\n%s%d\n%s\n%s%d\n%s%d",
-		$<code>2,
+	$<attr.variableOrder>$ = 1;
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	sprintf($<attr.code>$,"%s\n%s\n%s%d\n%s\n%s%d\n%s%d",
+		$<attr.code>2,
 		"DUP",
 		"DUP",
-		"DE_REF ",$<variableOrder>$,
+		"DE_REF ",$<attr.variableOrder>$,
 		"INC",
-		"STORE_REF ",$<variableOrder>$,
-		"DE_REF ",$<variableOrder>$);
+		"STORE_REF ",$<attr.variableOrder>$,
+		"DE_REF ",$<attr.variableOrder>$);
 }
   | MINUS_MINUS LV 
 	{
-		sprintf($<code>$, "%s\n%s\n%s\n%s\n%s\n%s\n%s",
-		$<code>2,		
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+		sprintf($<attr.code>$, "%s\n%s\n%s\n%s\n%s\n%s\n%s",
+		$<attr.code>2,		
 		"DUP",
 		"DUP",
 		"DE_REF 1", 
 		"DEC",
 		"STORE_REF",
-		"DE_REF 1")	
+		"DE_REF 1");	
 	}
   | LV PLUS_PLUS 
 	{
-		sprintf($<code>$, "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s",
-		$<code>2,		
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+		sprintf($<attr.code>$, "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s",
+		$<attr.code>2,		
 		"DUP",
 		"DUP",
 		"DE_REF 1", 
 		"INC",
 		"STORE_REF",
 		"DE_REF 1",
-		"DEC")	
+		"DEC");	
 	}
   | LV MINUS_MINUS {
-		sprintf($<code>$, "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s",
-		$<code>2,		
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+		sprintf($<attr.code>$, "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s",
+		$<attr.code>2,		
 		"DUP",
 		"DUP",
 		"DE_REF 1", 
 		"DEC",
 		"STORE_REF",
 		"DE_REF 1",
-		"INC")		
+		"INC");	
 	}
   | LEFT_PARENTHESIS E RIGHT_PARENTHESIS 
   | IDU LEFT_PARENTHESIS LE RIGHT_PARENTHESIS 
   | MINUS F {
-	  sprintf($<code>$, "%s\n%s\n",
-	  	$<code>2,
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	  sprintf($<attr.code>$, "%s\n%s\n",
+	  	$<attr.code>2,
 		"NEG");
   }
   | NOT F {
-	  sprintf($<code>$, "%s\n%s\n",
-	  	$<code>2,
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	  sprintf($<attr.code>$, "%s\n%s\n",
+	  	$<attr.code>2,
 		"NOT");
   }
   | TRUE {
-	  sprintf($<code>$, "%s\n",
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	  sprintf($<attr.code>$, "%s\n",
 		"LOAD_TRUE");
   }
   | FALSE {
-	  sprintf($<code>$, "%s\n",
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+	  sprintf($<attr.code>$, "%s\n",
 		"LOAD_FALSE");
   }
   | CHR {
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
 	  int n = getConstantNumber();
-	  sprintf($<code>$, "LOAD_CONST %d\n", n);
+	  sprintf($<attr.code>$, "LOAD_CONST %d\n", n);
   }
   | STR {
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
 	  int n = getConstantNumber();
-	  sprintf($<code>$, "LOAD_CONST %d\n", n);
+	  sprintf($<attr.code>$, "LOAD_CONST %d\n", n);
   }
   | NUM {
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
 	  int n = getConstantNumber();
-	  sprintf($<code>$, "LOAD_CONST %d\n", n);
+	  sprintf($<attr.code>$, "LOAD_CONST %d\n", n);
   } ;
 
 LE : LE COMMA E {
-		sprintf($<code>$, "%s\n%s\n", $<code>1, $<code>3);
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+		sprintf($<attr.code>$, "%s\n%s\n", $<attr.code>1, $<attr.code>3);
 	}
   | E {
-		sprintf($<code>$, "%s\n", $<code>1);		 		 		 		 		 
+		$<attr.code>$ = (char*) malloc(5000*sizeof(char));
+		sprintf($<attr.code>$, "%s\n", $<attr.code>1);		 		 		 		 		 
 	} ;
 
 LV : LV DOT IDU
@@ -476,18 +532,20 @@ LV : LV DOT IDU
    };
 
 IDD : id {
+	printf("IDD -> id\n");
   $<_.ID_.name>$ = ids[currentLevel][secondaryToken].name;
   if( ids[currentLevel][secondaryToken].count  > 1 ) {
     printf("scope error: trying to redefine\n");
-	exit(1);
+		exit(1);
   }
+	addName(ids[currentLevel][secondaryToken].name);
 };
 
 IDU : id {
   char *name =ids[currentLevel][secondaryToken].name;
   $<_.ID_.name>$ = name;
   if( searchName( name ) == -1 ) {
-        printf("scope warning: trying to use unexisting\n");
+        printf("scope warning: trying to use unexisting %s\n",name);
 		hadWarning = 1;
         addName(name);
   }
