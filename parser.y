@@ -121,7 +121,9 @@ LDE : LDE DE {
 DE : DF {
 	$<code>$ = $<code>1;
 }
-   | DT ;
+	| DT {
+		$<code>$ = $<code>1;
+} ;
 
 /* Um Tipo (T) pode ser a palavra ‘integer’ ou a palavra ‘char’ ou a palavra ‘boolean’ ou a palavra ‘string’ ou um ID representando um tipo previamente declarado: */
 
@@ -425,7 +427,7 @@ F : LV {
 		"DEC",
 		"STORE_REF",
 		"DE_REF 1",
-		"DEC")		
+		"INC")		
 	}
   | LEFT_PARENTHESIS E RIGHT_PARENTHESIS 
   | IDU LEFT_PARENTHESIS LE RIGHT_PARENTHESIS 
