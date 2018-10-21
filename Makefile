@@ -34,3 +34,8 @@ bison.c: parser.y
 
 clean:
 	rm -f *.o *~ lex.c lex.yy.c bison.c tok.h parser.tab.c parser.tab.h parser.output simple_script_language attributes.o code.o
+
+test:
+	make clean;
+	make;
+	./simple_script_language < examples/correct

@@ -1,5 +1,6 @@
 %{
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "./parser.tab.h"
 #include "./helpers/shared.h"
@@ -532,13 +533,11 @@ LV : LV DOT IDU
    };
 
 IDD : id {
-	printf("IDD -> id\n");
   $<_.ID_.name>$ = ids[currentLevel][secondaryToken].name;
   if( ids[currentLevel][secondaryToken].count  > 1 ) {
     printf("scope error: trying to redefine\n");
 		exit(1);
   }
-	addName(ids[currentLevel][secondaryToken].name);
 };
 
 IDU : id {
@@ -555,4 +554,6 @@ TRUE: const_true;
 FALSE: const_false;
 CHR: const_char;
 STR: const_string;
-NUM: const_number;
+NUM: const_number {
+		puts("-------------------------");
+};

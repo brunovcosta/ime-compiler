@@ -16,7 +16,7 @@ int currentLevel = 0;
 int searchName(char *name){
 	int pos;
 	int level;
-	for(level=0;level < currentLevel;level++){
+	for(level=0;level <= currentLevel;level++){
 		for(pos=0;pos<idsCount[level];pos++){
 			if(strcmp(name,ids[level][pos].name) == 0){
 				return pos;
