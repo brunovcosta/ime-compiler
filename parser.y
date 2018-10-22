@@ -249,7 +249,7 @@ LI : LI COMMA IDD
 
 S : IF LEFT_PARENTHESIS E RIGHT_PARENTHESIS S %prec "then" {
 	int l1 = getCheckpoint();
-		$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
+	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
 	sprintf($<attr.code>$,"%s\n%s%d\n%s\n%c%d%c",
 		$<attr.code>3,
 		"TJMP L",l1,
@@ -259,7 +259,7 @@ S : IF LEFT_PARENTHESIS E RIGHT_PARENTHESIS S %prec "then" {
   | IF LEFT_PARENTHESIS E RIGHT_PARENTHESIS S ELSE S {
 	int l1 = getCheckpoint();
 	int l2 = getCheckpoint();
-		$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
+	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
 	sprintf($<attr.code>$,"%s\n%s%d\n%s\n%c%d%c\n%s\n%c%d%c",
 		$<attr.code>3,
 		"TJMP L",l1,
@@ -272,7 +272,7 @@ S : IF LEFT_PARENTHESIS E RIGHT_PARENTHESIS S %prec "then" {
 	int l1 = getCheckpoint();
 	int l2 = getCheckpoint();
 
-		$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
+	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
 	sprintf($<attr.code>$,"%c%d%c\n%s\n%s%d\n%s\n%s%d\n%c%d%c",
 		'L',l1,':',
 		$<attr.code>4,
@@ -287,7 +287,7 @@ S : IF LEFT_PARENTHESIS E RIGHT_PARENTHESIS S %prec "then" {
   | DO S WHILE LEFT_PARENTHESIS E RIGHT_PARENTHESIS SEMI_COLON {
 	int l1 = getCheckpoint();
 	int l2 = getCheckpoint();
-		$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
+	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
 	sprintf($<attr.code>$,"%c%d%c\n%s\n%s\n%s\n%s\n%d\n%c%d%c",
 		'L',l1,':',
 		$<attr.code>2,
@@ -300,24 +300,24 @@ S : IF LEFT_PARENTHESIS E RIGHT_PARENTHESIS S %prec "then" {
 	$<attr.endParentCheckpoint>5 = l2;
 }
   | B {
-		$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
+	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
 	strcpy($<attr.code>$,$<attr.code>1);
 }
   | LV ASSIGN E SEMI_COLON
   | BREAK SEMI_COLON {
-		$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
+	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
 	sprintf($<attr.code>$,"JMP L%d",$<attr.endParentCheckpoint>$);
   }
   | CONTINUE SEMI_COLON {
-		$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
+	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
 	sprintf($<attr.code>$,"JMP L%d",$<attr.beginParentCheckpoint>$);
   }
   | RETURN R SEMI_COLON {
-		int n = $<attr.value>2;
-		$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
-		sprintf($<attr.code>$,"%s%d\n%s",
-			"LOAD_VAR ",n,
-			"RET");
+	int n = $<attr.value>2;
+	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
+	sprintf($<attr.code>$,"%s%d\n%s",
+		"LOAD_VAR ",n,
+		"RET");
   };
   
 /* Uma Expressão (E) pode ser composta por operadores lógicos, relacionais ou aritméticos, além de permitir o acesso aos componentes dos tipos agregados e da atribuição de valores: */
@@ -430,8 +430,7 @@ F : LV {
 		$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
 		sprintf($<attr.code>$, "%s\n%s%d",
 		$<attr.code>1,
-		"DE_REF", 
-		$<attr.variableOrder>$);
+		"DE_REF ", $<attr.variableOrder>$);
 	}
   | PLUS_PLUS LV {
 		// yellow sign
