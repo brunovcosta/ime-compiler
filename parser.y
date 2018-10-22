@@ -553,15 +553,26 @@ IDD : id {
 IDU : id {
   char *name =ids[currentLevel][secondaryToken].name;
   $<_.ID_.name>$ = name;
-  if( searchName( name ) == -1 ) {
+  $<attr.value>$ = searchName( name );
+  if( $<attr.value>$ == -1 ) {
         printf("scope warning: trying to use unexisting %s\n",name);
 		hadWarning = 1;
         addName(name);
   }
 };
 
-TRUE: const_true;
-FALSE: const_false;
-CHR: const_char;
-STR: const_string;
-NUM: const_number {};
+TRUE: const_true {
+	$<attr.value>$ = getConstantNumber();
+};
+FALSE: const_false {
+	$<attr.value>$ = getConstantNumber();
+};
+CHR: const_char {
+	$<attr.value>$ = getConstantNumber();
+};
+STR: const_string {
+	$<attr.value>$ = getConstantNumber();
+};
+NUM: const_number {
+	$<attr.value>$ = getConstantNumber();
+};
