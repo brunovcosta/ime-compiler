@@ -42,15 +42,16 @@ int addName(char *name){
 
 pobject SymbolTable[MAX_NEST_LEVEL];
 pobject SymbolTableLast[MAX_NEST_LEVEL];
-int nCurrentLevel = -1;
 
 int NewBlock(void) {
-    SymbolTable[++nCurrentLevel] = NULL;
-    SymbolTableLast[nCurrentLevel] = NULL;
-    return nCurrentLevel;
+	currentLevel++;
+	SymbolTable[currentLevel] = NULL;
+	SymbolTableLast[currentLevel] = NULL;
+	return currentLevel;
 }
 
 int EndBlock(void) {
-    return --nCurrentLevel;
+	idsCount[currentLevel] = 0;
+	return --currentLevel;
 }
 
