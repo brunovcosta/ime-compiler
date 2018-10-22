@@ -52,6 +52,8 @@ pobject p, t, f, t1, t2;
 		int endParentCheckpoint;
 		int beginParentCheckpoint;
 
+		int value;
+
 		int variableOrder;
 
 		int nVariables;
@@ -306,9 +308,12 @@ S : IF LEFT_PARENTHESIS E RIGHT_PARENTHESIS S %prec "then" {
 		$<attr.code>$ = (char*) malloc(500*sizeof(char));
 	sprintf($<attr.code>$,"JMP L%d",$<attr.beginParentCheckpoint>$);
   }
-  | RETURN E SEMI_COLON {
+  | RETURN R SEMI_COLON {
+		int n = $<attr.value>2;
 		$<attr.code>$ = (char*) malloc(500*sizeof(char));
-		strcpy($<attr.code>$,"TESTELOKO");
+		sprintf($<attr.code>$,"%s%d\n%s",
+			"LOAD_VAR ",n,
+			"RET");
   };
   
 /* Uma Expressão (E) pode ser composta por operadores lógicos, relacionais ou aritméticos, além de permitir o acesso aos componentes dos tipos agregados e da atribuição de valores: */
@@ -380,7 +385,7 @@ L : L LESS_THAN R {
   } ;
 
 R : R PLUS Y {
-		$<attr.code>$ = (char*) malloc(500*sizeof(char));
+	$<attr.code>$ = (char*) malloc(500*sizeof(char));
 	sprintf($<attr.code>$, "%s\n%s\n%s",
 		$<attr.code>1,
 		$<attr.code>3,
