@@ -276,7 +276,7 @@ S : IF LEFT_PARENTHESIS E RIGHT_PARENTHESIS S %prec "then" {
 	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
 	sprintf($<attr.code>$,"%c%d%c\n%s\n%s%d\n%s\n%s%d\n%c%d%c",
 		'L',l1,':',
-		$<attr.code>4,
+		$<attr.code>3,
 		"TJMP L",l2,
 		$<attr.code>5,
 		"JMP L",l1,
@@ -384,7 +384,7 @@ L : L LESS_THAN R {
 		"EQ");
   }
   | L NOT_EQUAL R {
-		$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
+	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
 	sprintf($<attr.code>$, "%s\n%s\n%s",
 		$<attr.code>1,
 		$<attr.code>3,
