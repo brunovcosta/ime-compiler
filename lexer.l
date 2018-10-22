@@ -8,53 +8,58 @@
 %}
 %%
 
-"else"                {return ELSE;}
-"break"               {return BREAK;}
-"while"               {return WHILE;}
-"var"                 {return VAR;}
-"continue"            {return CONTINUE;}
-"function"            {return FUNCTION;}
-"string"              {return STRING;}
-"if"                  {return IF;}
-"boolean"             {return BOOLEAN;}
-"char"                {return CHAR;}
-"type"                {return TYPE;}
-"integer"             {return INTEGER;}
-"return"              {return RETURN;}
-"do"                  {return DO;}
-"of"                  {return OF;}
-"struct"              {return STRUCT;}
-">="                  {return GREATER_OR_EQUAL;}
-"=="                  {return EQUALS;}
-"="                   {return ASSIGN;}
-"<="                  {return LESS_OR_EQUAL;}
-">"                   {return GREATER_THAN;}
-"<"                   {return LESS_THAN;}
-"("                   {return LEFT_PARENTHESIS;}
-")"                   {return RIGHT_PARENTHESIS;}
-"*"                   {return TIMES;}
-"/"                   {return DIVIDE;}
-"+"                   {return PLUS;}
-"-"                   {return MINUS;}
-"++"                  {return PLUS_PLUS;}
-"--"                  {return MINUS_MINUS;}
-"["                   {return LEFT_SQUARE;}
-"]"                   {return RIGHT_SQUARE;}
-"{"                   {return LEFT_BRACES;}
-"}"                   {return RIGHT_BRACES;}
-":"                   {return COLON;}
-";"                   {return SEMI_COLON;}
-"."                   {return DOT;}
-","                   {return COMMA;}
-"!"                   {return NOT;}
-"true"                {return const_true;}
-"false"               {return const_false;}
-\[(.*,)*\]            {return const_array;}
-[0-9]+                {return const_number;}
-\"[a-zA-Z]+\"         {return const_string;}
-'.'                   {return const_char;}
-[a-zA-Z]+             {secondaryToken = addName(yytext);return id;}
-[ \t\v\f]             { /* ignore blank characters */ }
-\n                    {++line;}
-.                     {puts("lexer error: invalid character"); exit(1); }
+"else"                {ECHO;return ELSE;}
+"break"               {ECHO;return BREAK;}
+"while"               {ECHO;return WHILE;}
+"var"                 {ECHO;return VAR;}
+"continue"            {ECHO;return CONTINUE;}
+"function"            {ECHO;return FUNCTION;}
+"string"              {ECHO;return STRING;}
+"if"                  {ECHO;return IF;}
+"boolean"             {ECHO;return BOOLEAN;}
+"char"                {ECHO;return CHAR;}
+"type"                {ECHO;return TYPE;}
+"integer"             {ECHO;return INTEGER;}
+"return"              {ECHO;return RETURN;}
+"do"                  {ECHO;return DO;}
+"of"                  {ECHO;return OF;}
+"struct"              {ECHO;return STRUCT;}
+">="                  {ECHO;return GREATER_OR_EQUAL;}
+"=="                  {ECHO;return EQUALS;}
+"!="                  {ECHO;return NOT_EQUAL;}
+"+="                  {ECHO;return PLUS_EQUAL;}
+"-="                  {ECHO;return MINUS_EQUAL;}
+"*="                  {ECHO;return TIMES_EQUAL;}
+"/="                  {ECHO;return DIVIDE_EQUAL;}
+"="                   {ECHO;return ASSIGN;}
+"<="                  {ECHO;return LESS_OR_EQUAL;}
+">"                   {ECHO;return GREATER_THAN;}
+"<"                   {ECHO;return LESS_THAN;}
+"("                   {ECHO;return LEFT_PARENTHESIS;}
+")"                   {ECHO;return RIGHT_PARENTHESIS;}
+"*"                   {ECHO;return TIMES;}
+"/"                   {ECHO;return DIVIDE;}
+"+"                   {ECHO;return PLUS;}
+"-"                   {ECHO;return MINUS;}
+"++"                  {ECHO;return PLUS_PLUS;}
+"--"                  {ECHO;return MINUS_MINUS;}
+"["                   {ECHO;return LEFT_SQUARE;}
+"]"                   {ECHO;return RIGHT_SQUARE;}
+"{"                   {ECHO;return LEFT_BRACES;}
+"}"                   {ECHO;return RIGHT_BRACES;}
+":"                   {ECHO;return COLON;}
+";"                   {ECHO;return SEMI_COLON;}
+"."                   {ECHO;return DOT;}
+","                   {ECHO;return COMMA;}
+"!"                   {ECHO;return NOT;}
+"true"                {ECHO;return const_true;}
+"false"               {ECHO;return const_false;}
+\[(.*,)*\]            {ECHO;return const_array;}
+[0-9]+                {ECHO;return const_number;}
+\"[a-zA-Z]+\"         {ECHO;return const_string;}
+'.'                   {ECHO;return const_char;}
+[a-zA-Z]+             {ECHO;secondaryToken = addName(yytext);return id;}
+[ \t\v\f]             {ECHO; /* ignore blank characters */ }
+\n                    {ECHO;++line;}
+.                     {ECHO;puts("lexer error: invalid character"); exit(1); }
 

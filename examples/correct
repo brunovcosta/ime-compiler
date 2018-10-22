@@ -1,7 +1,29 @@
-function fatorial(n: integer): integer {
-	if (n==0){
-		return 1;
-	}else{
-		return n * fatorial(n-1);
+function mmc(a: integer, b: integer): integer {
+	var aa : integer;
+	var bb : integer;
+
+	aa=0;
+	bb=0;
+	while(aa != bb){
+		if (aa < bb){
+			aa = aa+a;
+		}else{
+			bb = bb+b;
+		}
 	}
+
+	return aa;
+}
+
+function primo(n: integer): boolean {
+	var divisor: integer;
+	divisor = 2;
+	do {
+		if(mmc(n,divisor) == n){
+			return true;
+		} else {
+			divisor = divisor + 1;
+		}
+	} while(divisor < sqrt(n));
+	return false;
 }
