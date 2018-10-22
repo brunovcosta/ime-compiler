@@ -3,14 +3,13 @@
 
 void generateCode(char *code,int num, ...);
 
-int functionNumber = 0;
+extern int functionNumber;
 int getFunctionNumber();
 
-int constantNumber = 0;
+extern int constantNumber;
 int getConstantNumber();
 
-int checkpoint = 0;
+extern int checkpoint;
 int getCheckpoint();
 
 #endif
-

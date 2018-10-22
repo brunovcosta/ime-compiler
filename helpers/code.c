@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+
 void generateCode(char *code,int num, ...){
 	va_list params;
 	va_start(params,num);
@@ -16,14 +17,17 @@ void generateCode(char *code,int num, ...){
 	printf("\n");
 }
 
+int constantNumber=0;
 int getConstantNumber(){
 	return constantNumber++;
 }
 
+int functionNumber=0;
 int getFunctionNumber(){
 	return functionNumber++;
 }
 
+int checkpoint=0;
 int getCheckpoint(){
 	return checkpoint++;
 }
