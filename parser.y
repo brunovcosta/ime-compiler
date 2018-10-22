@@ -214,13 +214,13 @@ LP : LP COMMA IDD COLON T {
 B : LEFT_BRACES LDV LS RIGHT_BRACES {
 	$<attr.nParams>$ = $<attr.nParams>2;
 
-		$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
+	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
 	strcpy($<attr.code>$,$<attr.code>3);
 }
   | LEFT_BRACES LS RIGHT_BRACES {
-		$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
-		strcpy($<attr.code>$,$<attr.code>2);
-		$<attr.nParams>$ = 0;
+	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
+	strcpy($<attr.code>$,$<attr.code>2);
+	$<attr.nParams>$ = 0;
 };
 
 LDV : LDV DV {
@@ -241,7 +241,7 @@ LS : LS S {
 
 /* Uma Declaração de Variáveis (DV) é formada pela palavra ‘var’ seguida por uma Lista de Identificadores (LI), separados por ‘,’, seguida de ‘:’ e do Tipo (T) das variáveis declaradas com um ‘;’ ao final. */
 
-DV : VAR LI COLON T SEMI_COLON ;
+DV : VAR LI COLON T SEMI_COLON;
 
 LI : LI COMMA IDD
    | IDD ;
@@ -304,7 +304,13 @@ S : IF LEFT_PARENTHESIS E RIGHT_PARENTHESIS S %prec "then" {
 	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
 	strcpy($<attr.code>$,$<attr.code>1);
 }
-  | LV ASSIGN E SEMI_COLON
+  | LV ASSIGN E SEMI_COLON {
+	int n = $<attr.value>3;
+	sprintf($<attr.code>$,"%s\n%s\n%s%d",
+		$<attr.code>1,
+		$<attr.code>3,
+		"STORE_REF",n);
+}
   | BREAK SEMI_COLON {
 	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
 	sprintf($<attr.code>$,"JMP L%d",$<attr.endParentCheckpoint>$);
@@ -526,13 +532,14 @@ LE : LE COMMA E {
 	}
   | E {
 		$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
-		sprintf($<attr.code>$, "%s", $<attr.code>1);
+		strcpy($<attr.code>$, $<attr.code>1);
 	} ;
 
 LV : LV DOT IDU
    | LV LEFT_SQUARE E RIGHT_SQUARE
    | IDU {
-		 // TODO
+	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
+	sprintf($<attr.code>$,"LOAD_REF %d",$<attr.value>1);
    };
 
 IDD : id {

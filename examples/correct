@@ -1,6 +1,5 @@
 function mmc(a: integer, b: integer): integer {
-	var aa : integer;
-	var bb : integer;
+	var aa,bb : integer;
 
 	aa=0;
 	bb=0;
