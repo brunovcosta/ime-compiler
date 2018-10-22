@@ -12,7 +12,6 @@
 "break"               {printf(">>");ECHO;printf("\n");return BREAK;}
 "while"               {printf(">>");ECHO;printf("\n");return WHILE;}
 "var"                 {printf(">>");ECHO;printf("\n");return VAR;}
-"="                   {printf(">>");ECHO;printf("\n");return ASSIGN;}
 "continue"            {printf(">>");ECHO;printf("\n");return CONTINUE;}
 "function"            {printf(">>");ECHO;printf("\n");return FUNCTION;}
 "string"              {printf(">>");ECHO;printf("\n");return STRING;}
@@ -27,6 +26,7 @@
 "struct"              {printf(">>");ECHO;printf("\n");return STRUCT;}
 ">="                  {printf(">>");ECHO;printf("\n");return GREATER_OR_EQUAL;}
 "=="                  {printf(">>");ECHO;printf("\n");return EQUALS;}
+"="                   {printf(">>");ECHO;printf("\n");return ASSIGN;}
 "<="                  {printf(">>");ECHO;printf("\n");return LESS_OR_EQUAL;}
 ">"                   {printf(">>");ECHO;printf("\n");return GREATER_THAN;}
 "<"                   {printf(">>");ECHO;printf("\n");return LESS_THAN;}

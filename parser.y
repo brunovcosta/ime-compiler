@@ -554,6 +554,4 @@ TRUE: const_true;
 FALSE: const_false;
 CHR: const_char;
 STR: const_string;
-NUM: const_number {
-		puts("-------------------------");
-};
+NUM: const_number {};
