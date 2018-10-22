@@ -16,9 +16,10 @@ int hadWarning = 0;
 
 int yywrap() {
 	if(hadWarning)
-		puts("compilado com warnings!\n");
+		puts("compilado com warnings!");
 	else
-		puts("compilado com sucesso!\n");
+		puts("compilado com sucesso!");
+	puts("salvo em ./output.code");
     return 1;
 } 
   
@@ -113,7 +114,9 @@ pobject p, t, f, t1, t2;
 /* Um Programa (P) é formado por uma Lista de Declarações Externas (LDE) */
 
 P : LDE {
-	printf("%s",$<attr.code>1);
+	FILE *file = fopen("output.code","w");
+	fprintf(file,"%s",$<attr.code>1);
+	fclose(file);
 };
 
 LDE : LDE DE {

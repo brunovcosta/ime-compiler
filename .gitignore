@@ -11,3 +11,4 @@ simple_script_language
 *.tab.h
 tok.h
 .vscode
+output.code
