@@ -337,26 +337,26 @@ E : E AND L {
 		"AND");	
 }
   | E OR L {
-		$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
+	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
 	sprintf($<attr.code>$,"%s\n%s\n%s",
 		$<attr.code>1,
 		$<attr.code>3,
 		"OR");
   }
   | L {
-		$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
-	  strcpy($<attr.code>$,$<attr.code>1);
+	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
+	strcpy($<attr.code>$,$<attr.code>1);
   } ;
 
 L : L LESS_THAN R {
-		$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
+	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
 	sprintf($<attr.code>$, "%s\n%s\n%s",
 		$<attr.code>1,
 		$<attr.code>3,
 		"LT");
 }
   | L GREATER_THAN R {
-		$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
+	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
 	sprintf($<attr.code>$, "%s\n%s\n%s",
 		$<attr.code>1,
 		$<attr.code>3,
