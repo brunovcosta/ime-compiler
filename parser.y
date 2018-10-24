@@ -557,14 +557,16 @@ IDD : id {
 };
 
 IDU : id {
-  char *name =ids[currentLevel][secondaryToken].name;
-  $<_.ID_.name>$ = name;
-  $<attr.value>$ = searchName( name );
-  if( $<attr.value>$ == -1 ) {
-        printf("scope warning: trying to use unexisting %s\n",name);
+	char *name =ids[currentLevel][secondaryToken].name;
+	$<_.ID_.name>$ = name;
+	$<attr.value>$ = searchName( name );
+	if( $<attr.value>$ == -1 ) {
+		printf("scope warning: trying to use unexisting %s\n",name);
 		hadWarning = 1;
-        addName(name);
-  }
+		addName(name);
+	}
+	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
+	sprintf($<attr.code>$,"LOAD_REF %d",$<attr.value>$);
 };
 
 TRUE: const_true {
