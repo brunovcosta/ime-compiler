@@ -309,7 +309,7 @@ S : IF LEFT_PARENTHESIS E RIGHT_PARENTHESIS S %prec "then" {
 	sprintf($<attr.code>$,"%s\n%s\n%s%d",
 		$<attr.code>1,
 		$<attr.code>3,
-		"STORE_REF",n);
+		"STORE_REF ",n);
 }
   | BREAK SEMI_COLON {
 	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
