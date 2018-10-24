@@ -190,7 +190,7 @@ DF : FUNCTION IDD NB LEFT_PARENTHESIS LP RIGHT_PARENTHESIS COLON T B {
 	EndBlock();
 	int n = getFunctionNumber();
 	int p = $<attr.nParams>5;
-	int v = $<attr.nParams>9;
+	int v = $<attr.nVariables>9;
 
 		$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
 	sprintf($<attr.code>$,"%s %d %d %d\n%s\n%s",
@@ -212,7 +212,7 @@ LP : LP COMMA IDD COLON T {
 /* Um Bloco (B) é delimitado por chave e contém uma Lista de Declaração de Variáveis (LDV) seguida por uma Lista de Statements (LS) ou Comandos: */
 
 B : LEFT_BRACES LDV LS RIGHT_BRACES {
-	$<attr.nParams>$ = $<attr.nParams>2;
+	$<attr.nVariables>$ = $<attr.nVariables>2;
 
 	$<attr.code>$ = (char*) malloc(CODE_SIZE*sizeof(char));
 	strcpy($<attr.code>$,$<attr.code>3);
@@ -224,10 +224,10 @@ B : LEFT_BRACES LDV LS RIGHT_BRACES {
 };
 
 LDV : LDV DV {
-	$<attr.nVariables>$ = $<attr.nVariables>1 + 1;
+	$<attr.nVariables>$ = $<attr.nVariables>1 + $<attr.nVariables>2;
 }
     | DV {
-	$<attr.nVariables>$ = 1;
+	$<attr.nVariables>$ = $<attr.nVariables>1;
 };
 
 LS : LS S {
@@ -241,10 +241,16 @@ LS : LS S {
 
 /* Uma Declaração de Variáveis (DV) é formada pela palavra ‘var’ seguida por uma Lista de Identificadores (LI), separados por ‘,’, seguida de ‘:’ e do Tipo (T) das variáveis declaradas com um ‘;’ ao final. */
 
-DV : VAR LI COLON T SEMI_COLON;
+DV : VAR LI COLON T SEMI_COLON {
+	$<attr.nVariables>$ = $<attr.nVariables>2;
+};
 
-LI : LI COMMA IDD
-   | IDD ;
+LI : LI COMMA IDD {
+	$<attr.nVariables>$ = $<attr.nVariables>1 + 1;
+}
+   | IDD {
+	$<attr.nVariables>$ = 1;
+};
 
 /* Um Statement (S) pode ser um comando de seleção, repetição, um bloco, uma atricbuição ou um comando de controle de fluxo de repetição (‘break’ ou ‘continue’): */
 
